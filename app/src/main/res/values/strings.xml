@@ -54,7 +54,7 @@
     <string name="snackbar_error">Error, please try again.</string>
     <string name="snackbar_cannot_reach_servers">Cannot Reach Servers</string>
     <string name="snackbar_no_content_found">No content found!</string>
-    <string name="snackbar_thankyou_for_post">Thanks for your post</string>
+    <string name="snackbar_thankyou_for_post">Thanks. Your post has been shared</string>
     <string name="snackbar_specify_title_content_for_post">Please specify both Title and Content</string>
     <string name="snackbar_error_fetching_notifications">Some Error in fetching notifications.</string>
     <string name="snackbar_error_fetching_streams">Some Error in fetching streams.</string>
