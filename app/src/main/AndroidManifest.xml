@@ -116,7 +116,7 @@
             android:resource="@color/pink500" />
 
         <activity
-            android:name=".activities.PostActivity"
+            android:name=".activities.CreateNewsNotif"
             android:label="@string/title_activity_post"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme">
@@ -150,9 +150,9 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".activities.ECertificate" />
         <activity android:name=".activities.LogInActivity" />
-        <activity android:name=".activities.ChoosePostOrEvent" />
+        <activity android:name=".activities.ChooseNotifType" />
         <activity android:name=".activities.NotifActivity" />
-        <activity android:name=".activities.Sample" />
+        <activity android:name=".activities.CreateEventNotif" />
         <activity android:name=".activities.StreamSubscribeActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
     </application>

@@ -30,7 +30,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,11 +45,11 @@ import static in.shriyansh.streamify.network.Urls.EVENT_NOTIFICATION_URL;
 import static in.shriyansh.streamify.network.Urls.LIST_ALL_STREAMS;
 
 
-public class Sample extends AppCompatActivity {
+public class CreateEventNotif extends AppCompatActivity {
 
     private Button reg_event;
 
-    private static final String TAG = "Sample";
+    private static final String TAG = "CreateEventNotif";
     private String[] streams;
     private String httpstatus;
     private CheckBox[] streambox;
@@ -67,7 +66,7 @@ public class Sample extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
 
-        requestQueue = Volley.newRequestQueue(Sample.this);
+        requestQueue = Volley.newRequestQueue(CreateEventNotif.this);
 
         initUI();
         getStreams();
@@ -115,7 +114,7 @@ public class Sample extends AppCompatActivity {
                             new Response.ErrorListener() {
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
-                                    Toast.makeText(Sample.this, "Response Error!!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(CreateEventNotif.this, "Response Error!!", Toast.LENGTH_LONG).show();
                                 }
                             }){
                                 @Override
@@ -297,7 +296,7 @@ public class Sample extends AppCompatActivity {
 //
 //            @Override
 //            protected void thenDoUiRelatedWork(String s) {
-//                Toast.makeText(Sample.this, "scnnlls" + s, Toast.LENGTH_LONG).show();
+//                Toast.makeText(CreateEventNotif.this, "scnnlls" + s, Toast.LENGTH_LONG).show();
 //            }
 //
 //
@@ -311,7 +310,7 @@ public class Sample extends AppCompatActivity {
         streamCheckBools = new int[streams.length];
 
         for (loop_var_box=0; loop_var_box<streams.length; loop_var_box++) {
-            streambox[loop_var_box] = new CheckBox(Sample.this);
+            streambox[loop_var_box] = new CheckBox(CreateEventNotif.this);
             streambox[loop_var_box].setText(streams[loop_var_box]);
             streambox[loop_var_box].setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             streambox[loop_var_box].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

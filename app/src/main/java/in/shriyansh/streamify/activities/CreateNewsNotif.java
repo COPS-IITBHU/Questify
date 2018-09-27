@@ -38,8 +38,8 @@ import org.json.JSONObject;
 /**
  * User Post Activity.
  */
-public class PostActivity extends AppCompatActivity {
-    private static final String TAG = PostActivity.class.getSimpleName();
+public class CreateNewsNotif extends AppCompatActivity {
+    private static final String TAG = CreateNewsNotif.class.getSimpleName();
 
     private EditText titleTv;
     private EditText contentTv;
@@ -182,7 +182,7 @@ public class PostActivity extends AppCompatActivity {
                 String content = contentTv.getText().toString();
                 if (!title.contentEquals("") && !content.contentEquals("")) {
                     post(title,type,content, PreferenceUtils.getStringPreference(
-                            PostActivity.this,PreferenceUtils.PREF_USER_GLOBAL_ID));
+                            CreateNewsNotif.this,PreferenceUtils.PREF_USER_GLOBAL_ID));
                 } else {
                     showSnackBar(R.string.snackbar_specify_title_content_for_post);
                 }

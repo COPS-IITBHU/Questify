@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,ChoosePostOrEvent.class);
+                Intent intent = new Intent(MainActivity.this,ChooseNotifType.class);
                 startActivity(intent);
             }
         });
