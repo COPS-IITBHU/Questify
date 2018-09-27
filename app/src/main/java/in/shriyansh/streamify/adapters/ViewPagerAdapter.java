@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import in.shriyansh.streamify.fragments.Events;
 import in.shriyansh.streamify.fragments.News;
-import in.shriyansh.streamify.fragments.Streams;
 import in.shriyansh.streamify.fragments.Dashboard;
 
 /**
@@ -33,10 +32,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
                 return new News();
             case 1:
                 return new Events();
-            case 3:
-                return new Dashboard();
             default:
-                return new Streams();
+                return new Dashboard();
         }
     }
 

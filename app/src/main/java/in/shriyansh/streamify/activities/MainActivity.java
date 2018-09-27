@@ -49,10 +49,9 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
     private ViewPagerAdapter adapter;
     private SlidingTabLayout tabs;
 
-    private final CharSequence[] titles = {"0","0","0","0"};
+    private final CharSequence[] titles = {"0","0","0"};
     private static final int POSITION_NEWS = 0;
     private static final int POSITION_EVENTS = 1;
-    private static final int POSITION_STREAMS = 2;
 
     private DbMethods dbMethods;
     private RequestQueue volleyQueue;
@@ -255,58 +254,6 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
 //        }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Fetches streams from the server using volley.
-     *
-     * @param userId User's global Id
-     */
-    private void getStreams(String userId) {
-            Map<String, String> params = new HashMap<>();
-//            params.put(Constants.STREAM_PARAM_USER_ID,userId);
-
-            params.put("email", PreferenceUtils.getStringPreference(MainActivity.this, PreferenceUtils.PREF_USER_EMAIL));
-
-            Log.d(TAG,params.toString());
-
-            JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST,
-                    GET_STREAMS, new JSONObject(params), new Response.Listener<JSONObject>() {
-
-                @Override
-                public void onResponse(JSONObject resp) {
-                    Log.d(TAG, resp.toString());
-                    try {
-                        String status = resp.getString(Constants.RESPONSE_STATUS_KEY);
-                        if (status.equals(Constants.RESPONSE_STATUS_VALUE_OK)) {
-                            long count = dbMethods.insertStreams(resp.getJSONObject("data")
-                                    .getJSONArray("streams"));
-                            showNewItem(POSITION_STREAMS,String.valueOf(count));
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d(TAG, "Error: " + error.toString());
-                }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put(Constants.HTTP_HEADER_CONTENT_TYPE_KEY,
-                            Constants.HTTP_HEADER_CONTENT_TYPE_JSON);
-                    return headers;
-                }
-            };
-            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    Constants.HTTP_INITIAL_TIME_OUT,
-                    Constants.HTTP_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            volleyQueue.add(stringRequest);
     }
 
     /**

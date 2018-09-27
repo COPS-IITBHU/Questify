@@ -28,50 +28,6 @@ public class DbMethods {
     }
 
     /**
-     * Inserts Stream into database.
-     *
-     * @param streamsJsonArray  Stream as JSONArray
-     * @return                  insert id
-     */
-    public long insertStreams(JSONArray streamsJsonArray) {
-        Cursor oldCursor = this.queryStreams(null,
-                DbContract.Streams.COLUMN_GLOBAL_ID + " <> ?",
-                new String[]{Constants.INSTRUCTIONS_RECORD_ID + ""},
-                null,0);
-        int oldCount = oldCursor.getCount();
-        this.deleteStreams(DbContract.Streams.COLUMN_GLOBAL_ID + " <> ?",
-                new String[]{Constants.INSTRUCTIONS_RECORD_ID + ""});
-        for (int i = 0;i < streamsJsonArray.length();i++) {
-            try {
-                JSONObject streamJson = streamsJsonArray.getJSONObject(i);
-                ContentValues values = new ContentValues();
-                values.put(DbContract.Streams.COLUMN_GLOBAL_ID,streamJson.getInt("id"));
-                values.put(DbContract.Streams.COLUMN_TITLE,streamJson.getString("title"));
-                values.put(DbContract.Streams.COLUMN_SUBTITLE,streamJson.getString(
-                        "subtitle"));
-                values.put(DbContract.Streams.COLUMN_DESCRIPTION,streamJson.getString(
-                        "description"));
-                values.put(DbContract.Streams.COLUMN_IMAGE,streamJson.getString("image"));
-                values.put(DbContract.Streams.COLUMN_CREATED_AT,
-                        Utils.convertStringTimeToTimestamp(streamJson.getString(
-                                "created_at"),
-                                Constants.LARAVEL_TIME_FORMAT));
-                values.put(DbContract.Streams.COLUMN_PARENT_BODIES,streamJson.getString(
-                        "bodies"));
-                values.put(DbContract.Streams.COLUMN_POSITION_HOLDERS,streamJson.getString(
-                        "position_holders"));
-                values.put(DbContract.Streams.COLUMN_AUTHOR,streamJson.getString("author"));
-                values.put(DbContract.Streams.COLUMN_IS_SUBSCRIBED,(streamJson.getBoolean(
-                        "is_subscribed") ? "1" : "0"));
-                db.insert(DbContract.Streams.TABLE_STREAMS,null,values);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return streamsJsonArray.length() - oldCount;
-    }
-
-    /**
      * Inserts notification in database.
      *
      * @param notificationsJsonArray    Notification as JSON Array
@@ -416,16 +372,6 @@ public class DbMethods {
     }
 
     /**
-     * Deletes Streams based on various params.
-     *
-     * @param whereClause   Conditions to filter
-     * @param whereArgs     Condition args
-     */
-    public void deleteStreams(String whereClause,String[] whereArgs) {
-        db.delete(DbContract.Streams.TABLE_STREAMS,whereClause,whereArgs);
-    }
-
-    /**
      * Deletes Contents based on various params.
      *
      * @param whereClause   Conditions to filter
@@ -433,27 +379,6 @@ public class DbMethods {
      */
     public void deleteContent(String whereClause,String[] whereArgs) {
         db.delete(DbContract.Contents.TABLE_CONTENTS,whereClause,whereArgs);
-    }
-
-    /**
-     * Queries the latest Stream Id in the database.
-     *
-     * @return  Id of the latest Stream
-     */
-    public long queryLastStreamId() {
-        Cursor cursor = queryStreams(null, DbContract.Streams.COLUMN_GLOBAL_ID
-                + " <> ?", new String[]{Constants.INSTRUCTIONS_RECORD_ID + ""},
-                DbContract.Streams.COLUMN_GLOBAL_ID
-                + " DESC ", 1);
-        long globalId = -1;
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                globalId = cursor.getInt(cursor.getColumnIndex(
-                        DbContract.Streams.COLUMN_GLOBAL_ID));
-            }
-            cursor.close();
-        }
-        return globalId;
     }
 
     /**
