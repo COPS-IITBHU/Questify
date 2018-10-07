@@ -142,6 +142,15 @@ public class StreamSubscribeActivity extends AppCompatActivity {
                 // on failure response
                 Snackbar.make(findViewById(R.id.SubscribeStreamActivityMainLayout),
                         "onFailure: "+e.toString(),Snackbar.LENGTH_LONG).show();
+
+                // set the UI
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        mAdapter.notifyDataSetChanged();
+                    }
+        });
             }
 
             @Override
@@ -161,22 +170,25 @@ public class StreamSubscribeActivity extends AppCompatActivity {
                         // create a list
                         for(int i=0;i<array.length(); ++i)
                             myStreams.add(array.getJSONObject(i).getString("streamtitle"));
-
-                        // set the UI
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressBar.setVisibility(View.INVISIBLE);
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        });
-                    }else{
+                    } else if (status.equals("500")){
+                        // User has no subscribed stream
+                    }
+                    else{
                         throw new Exception("onResponse Status: " + status);
                     }
                 }catch (Exception e){
                     // on failure response
                     Snackbar.make(findViewById(R.id.SubscribeStreamActivityMainLayout),
                             "Exception: "+e.toString(),Snackbar.LENGTH_LONG).show();
+                } finally{
+                    // set the UI
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.INVISIBLE);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
             }
         });
