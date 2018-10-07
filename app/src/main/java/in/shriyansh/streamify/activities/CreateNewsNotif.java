@@ -47,8 +47,8 @@ public class CreateNewsNotif extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String title = titleTv.getText().toString();
-                final String content = contentTv.getText().toString();
+                String title = titleTv.getText().toString();
+                String content = contentTv.getText().toString();
                 if (!title.contentEquals("") && !content.contentEquals("")) {
                     post(title, content);
                 } else {

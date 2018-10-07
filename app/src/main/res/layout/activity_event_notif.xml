@@ -1,59 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container_create_event_notif"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ColorPrimary"
-    tools:context=".activities.CreateEventNotif">
-
+    android:fitsSystemWindows="true"
+    tools:context="in.shriyansh.streamify.activities.CreateEventNotif">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView27"
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="10dp"
-            android:paddingRight="13dp"
-            android:text="Create An Event (Admins Only)"
-            android:textSize="24sp" />
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <EditText
+            android:id="@+id/create_event_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:hint="Title"
+            android:inputType="textCapSentences"
+            android:lines="1"
+            android:padding="@dimen/activity_vertical_margin"
+            android:textColor="@color/ColorPrimary"
+            android:textColorHint="@color/text_color_light"
+            android:textCursorDrawable="@null"
+            android:textSize="16dp" />
 
         <View
-            android:id="@+id/view13"
-            style="@style/Divider1"
             android:layout_width="match_parent"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp" />
+            android:layout_height="0.5dp"
+            android:background="@color/black_overlay" />
+
+        <EditText
+            android:id="@+id/create_event_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="top"
+            android:hint="Description"
+            android:inputType="textCapSentences"
+            android:padding="@dimen/activity_vertical_margin"
+            android:textColor="@color/ColorPrimary"
+            android:textColorHint="@color/text_color_light"
+            android:textCursorDrawable="@null"
+            android:textSize="16dp" />
 
         <LinearLayout
             android:id="@+id/stream_box_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"></LinearLayout>
-
-        <Button
-            android:id="@+id/btn_create_event1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginTop="32dp"
-            android:background="@drawable/button_register"
-            android:elevation="2dp"
-            android:gravity="center"
-            android:text="Create Event"
-            android:textColor="@color/register_background"
-            android:textSize="14dp" />
+            android:orientation="vertical" />
 
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_create_event_notif"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@color/black_overlay"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_create_event_notif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:padding="4dp"
+        android:src="@drawable/send_white_24"
+        app:backgroundTint="@color/teal500"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

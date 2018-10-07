@@ -1,329 +1,232 @@
-
-
-/**
- * THE ACTIVITY TO SEND NOTIFICATION DETAILS
-**/
-
 package in.shriyansh.streamify.activities;
 
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
-
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import in.shriyansh.streamify.R;
-import in.shriyansh.streamify.utils.Constants;
-//import needle.Needle;
-//import needle.UiRelatedProgressTask;
-//import needle.UiRelatedTask;
-//import okhttp3.MediaType;
-//import okhttp3.OkHttpClient;
-//import okhttp3.RequestBody;
-import static in.shriyansh.streamify.network.Urls.EVENT_NOTIFICATION_URL;
-import static in.shriyansh.streamify.network.Urls.LIST_ALL_STREAMS;
+import in.shriyansh.streamify.network.Urls;
+import in.shriyansh.streamify.utils.PreferenceUtils;
+import needle.Needle;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 public class CreateEventNotif extends AppCompatActivity {
 
-    private Button reg_event;
-
-    private static final String TAG = "CreateEventNotif";
-    private String[] streams;
-    private String httpstatus;
+    @BindView(R.id.progress_create_event_notif)    ProgressBar progressBar;
+    @BindView(R.id.fab_create_event_notif)         FloatingActionButton fab;
+    @BindView(R.id.create_event_title)                    EditText title;
+    @BindView(R.id.create_event_content)              EditText description;
+    @BindView(R.id.stream_box_group)               LinearLayout checkbox_layout;
+    private List<String> all_streams;
+    private List<String> checked_streams;
     private CheckBox[] streambox;
-    private int[] streamCheckBools;
-    private LinearLayout checkbox_layout;
-
-    private RequestQueue requestQueue;
-
-    private int loop_var_box;
-    private int l;
+    public static final String TAG = "CreateEventNotif.java";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sample);
+        setContentView(R.layout.activity_event_notif);
+        ButterKnife.bind(this);   // initUI
 
-        requestQueue = Volley.newRequestQueue(CreateEventNotif.this);
+        all_streams = new ArrayList<>();
+        checked_streams = new ArrayList<>();
 
-        initUI();
-        getStreams();
-        Log.e(TAG, streams.toString());
-//        createStreamCheckboxes();
+        progressBar.setVisibility(View.VISIBLE);
+        getStreams(); // will call createStreamCheckboxes() if successful
 
-        reg_event.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                JSONObject params = new JSONObject();
-                try {
-                    params.put("title", "MyEvent9");
-                    params.put("description", "MyDescription");
-                    params.put("imageURL", "");
-                    params.put("location", "G-12 IITBHU");
-                    params.put("authorEmail", "akshay.sharma.mat16@iitbhu.ac.in");
-
-                    JSONArray streamArray = new JSONArray();
-                    JSONArray tagArray = new JSONArray();
-
-                    streamArray.put("MyStream");
-                    tagArray.put("Boobs");
-                    tagArray.put("python");
-
-                    params.put("streams", streamArray);
-                    params.put("tags", tagArray);
-
-                    Log.e(TAG, params.toString());
-
-                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-                            EVENT_NOTIFICATION_URL,
-                            params,
-                            new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    try {
-                                        response.getString("status");
-                                    }
-                                    catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    Toast.makeText(CreateEventNotif.this, "Response Error!!", Toast.LENGTH_LONG).show();
-                                }
-                            }){
-                                @Override
-                                public Map<String, String> getHeaders() {
-                                    Map<String, String> headers = new HashMap<>();
-                                    headers.put(Constants.HTTP_HEADER_CONTENT_TYPE_KEY,
-                                            Constants.HTTP_HEADER_CONTENT_TYPE_JSON);
-                                    return headers;
-                                }
-                            };
-
-                    jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    Constants.HTTP_INITIAL_TIME_OUT,
-                    Constants.HTTP_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-
-                    requestQueue.add(jsonObjectRequest);
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-//
-//                Needle.onBackgroundThread().execute(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                        OkHttpClient client = new OkHttpClient();
-//
-//                        MediaType JSON
-//                                = MediaType.parse("application/json; charset=utf-8");
-//
-//                        /*************************************************************/
-//
-//                        RequestBody body = RequestBody.create(JSON, "{\n\t\"title\":\"MyEvent\"," +
-//                                "\n\t\"description\":\"MyDescription\"," +
-//                                "\n\t\"imageURL\":\"\"," +
-//                                "\n\t\"location\":\"G-11 IIT BHU\"," +
-//                                "\n\t\"authorEmail\":\"akshay.sharma.mat16@iitbhu.ac.in\"," +
-//                                "\n\t\"streams\":[\n\t\t\t\"MyStream\"\n\t\t]," +
-//                                "\n\t\"tags\":[\n\t\t\t\"Noobs\",\n\t\t\t\"Python\"\n\t\t]\n}"
-//                        );
-//
-//                        okhttp3.Request request = new okhttp3.Request.Builder()
-//                                .url(EVENT_NOTIFICATION_URL)
-//                                .post(body)
-//                                .addHeader("Content-Type", "application/json")
-//                                .addHeader("Cache-Control", "no-cache")
-//                                .addHeader("Postman-Token", "faa6d8dd-3b5c-420b-ba43-9eb1d413a7a6")
-//                                .build();
-//
-//                        try {
-//                            okhttp3.Response response = client.newCall(request).execute();
-//                            Log.e(TAG, response.body().toString());
-//                            JSONObject object;
-//                            try {
-//                                object=new JSONObject(response.body().string());
-//                                httpstatus = object.getString("status");
-//                                Log.e(TAG, httpstatus);
-//                            }
-//                            catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                    }
-//                });
-
-
-                    }
-                });
-
+                String t = title.getText().toString();
+                String des = description.getText().toString();
+                if (!t.contentEquals("") && !des.contentEquals(""))
+                    post(t, des);
+                else
+                    Snackbar.make(findViewById(R.id.container_create_event_notif),
+                            R.string.snackbar_specify_title_content_for_post, Snackbar.LENGTH_LONG).show();
             }
-
-    private void initUI() {
-        reg_event = findViewById(R.id.btn_create_event1);
-        checkbox_layout = findViewById(R.id.stream_box_group);
+        });
     }
 
-    private void getStreams() {
+    void post(final String title, String description) {
+        
+        // TODO Sending empty imageURL, subtitle and location for now
+        // TODO Either remove them from API or add edittexts in the app
+        
+        // TODO Skipping tags for now
+        // TODO Skipping streams for now
+        
+        String imageURL = "";
+        String subtitle = "";
+        String location = "";
+        String authorEmail = PreferenceUtils.getStringPreference(CreateEventNotif.this, PreferenceUtils.PREF_USER_EMAIL);
+        
+        OkHttpClient client = new OkHttpClient();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(JSON, "{\n\t\"title\":\""+title+"\"," +
+                "\n\t\"description\":\""+description+"\"," +
+                "\n\t\"imageURL\":\""+imageURL+"\"," +
+                "\n\t\"location\":\""+location+"\"," +
+                "\n\t\"subtitle\":\""+subtitle+"\"," +
+                "\n\t\"authorEmail\":\""+authorEmail+"\"," +
+                "\n\t\"streams\":[\n\t\t\t\"MyStream\"\n\t\t]," +
+                "\n\t\"tags\":[\n\t\t\t\"Noobs\",\n\t\t\t\"Python\"\n\t\t]\n}"
+        );
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
-                LIST_ALL_STREAMS,
-                null,
-                new Response.Listener<JSONObject>() {
+        Request request = new Request.Builder()
+                .url(Urls.EVENT_NOTIFICATION_URL)
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d(TAG, "postEvent method failed");
+                e.printStackTrace();
+                Needle.onMainThread().execute(new Runnable() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            String status = response.getString("status");
-                            if (status.equals(Constants.RESPONSE_STATUS_VALUE_200)) {
-                                l = response.getJSONArray("response").length();
-                                JSONArray resp = response.getJSONArray("response");
-                                streams = new String[l];
-
-                                for (int i = 0; i<l; i++) {
-                                    JSONObject user_stream_i = resp.getJSONObject(i);
-                                    streams[i] = user_stream_i.getString("title");
-//                                    Log.e(TAG, streams[i]);
-                                }
-
-                                Log.e(TAG, streams[0]);
-
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.e(TAG, "JSONException");
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        VolleyLog.e(TAG, "Error: " + error.toString());
-
+                    public void run() {
+                        Snackbar.make(findViewById(R.id.container_create_event_notif),
+                                R.string.snackbar_error, Snackbar.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
+            }
 
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                Constants.HTTP_INITIAL_TIME_OUT,
-                Constants.HTTP_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                Log.d(TAG, response.body().string());
+                Needle.onMainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Snackbar.make(findViewById(R.id.container_create_event_notif),
+                                R.string.snackbar_thankyou_for_post, Snackbar.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
+        });
+    }
 
-        requestQueue.add(jsonObjectRequest);
-/*******************************************************************/
+    // get all streams to fill the checkboxes
+    // call createStreamCheckboxes() when done
+    private void getStreams() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(Urls.LIST_ALL_STREAMS)
+                .get()
+                .build();
 
-//        Needle.onBackgroundThread().execute(new UiRelatedProgressTask<String, String>() {
-//            int i=0;
-//
-//            @Override
-//            protected void onProgressUpdate(String s) {
-//                Log.e(TAG, s);
-//                streams[i] = s;
-//                i++;
-//
-//
-//            }
-//
-//            @Override
-//            public String doWork() {
-//                OkHttpClient client1 = new OkHttpClient();
-//                String streams1;
-//                int l = 0;
-//
-//                okhttp3.Request request = new okhttp3.Request.Builder()
-//                        .url(LIST_ALL_STREAMS)
-//                        .build();
-//
-//                try {
-//                    okhttp3.Response response = client1.newCall(request).execute();
-//                    Log.e(TAG, response.body().toString());
-//                try {
-//                    JSONObject object;
-//                    object = new JSONObject(response.body().string());
-//                    httpstatus = object.getString("status");
-//
-//                    l = object.getJSONArray("response").length();
-//                    streams = new String[l];
-//
-//                    for (int i=0; i<l; i++) {
-//                        streams1 = object.getJSONArray("response").getJSONObject(i).getString("title");
-////                        streams[i] = streams1;
-//                        publishProgress(streams1);
-//                    }
-//                }
-//                catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                }
-//                catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                return Integer.toString(l);
-//            }
-//
-//            @Override
-//            protected void thenDoUiRelatedWork(String s) {
-//                Toast.makeText(CreateEventNotif.this, "scnnlls" + s, Toast.LENGTH_LONG).show();
-//            }
-//
-//
-//        });
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                // on failure response
+                Needle.onMainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                        Snackbar.make(findViewById(R.id.container_create_event_notif),
+                                "onFailure: " + e.toString(), Snackbar.LENGTH_LONG).show();
+                    }
+                });
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                // get stream titles
+                // subscribe to them when user hits save
+
+                try {
+                    String jsonData = response.body().string();
+                    JSONObject object = new JSONObject(jsonData);
+
+                    String status = object.getString("status");
+                    if (status.equals("200")) {
+                        // get stream titles
+                        JSONArray array = object.getJSONArray("response");
+
+                        // create a list
+                        for (int i = 0; i < array.length(); ++i)
+                            all_streams.add(array.getJSONObject(i).getString("title"));
+
+                        createStreamCheckboxes();
+                    } else {
+                        throw new Exception("onResponse Status: " + status);
+                    }
+                } catch (final Exception e) {
+                    Needle.onMainThread().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            Snackbar.make(findViewById(R.id.container_create_event_notif),
+                                    "onFailure: " + e.toString(), Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void createStreamCheckboxes() {
+        String res = "";
+        for(String s:all_streams)
+            res.concat(s+";");
+        Log.d(TAG,res);   // print all streams
 
-        streambox = new CheckBox[streams.length];
-        streamCheckBools = new int[streams.length];
+        streambox = new CheckBox[all_streams.size()];
 
-        for (loop_var_box=0; loop_var_box<streams.length; loop_var_box++) {
-            streambox[loop_var_box] = new CheckBox(CreateEventNotif.this);
-            streambox[loop_var_box].setText(streams[loop_var_box]);
-            streambox[loop_var_box].setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            streambox[loop_var_box].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        for (int i = 0; i < all_streams.size(); i++) {
+            streambox[i] = new CheckBox(CreateEventNotif.this);
+            streambox[i].setText(all_streams.get(i));
+            streambox[i].setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            streambox[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    streamCheckBools[loop_var_box] = (isChecked ? 1 : 0);
+                    if (isChecked)
+                        checked_streams.add(buttonView.getText().toString());
+                    else
+                        checked_streams.remove(buttonView.getText().toString());
                 }
             });
 
-            checkbox_layout.addView(streambox[loop_var_box]);
+            checkbox_layout.addView(streambox[i]);
         }
 
+        // Remember it's called by a background thread
+        Needle.onMainThread().execute(new Runnable() {
+            @Override
+            public void run() {
+                progressBar.setVisibility(View.GONE);
+            }
+        });
     }
-
-
 }
