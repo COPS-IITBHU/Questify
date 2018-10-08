@@ -183,6 +183,9 @@ public class CreateEventNotif extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
+        checked_streams = convertToQuoted(checked_streams);
+        checked_tags = convertToQuoted(checked_tags);
+
         // TODO something aint right here, gives 400
         RequestBody body = RequestBody.create(JSON, "{\n\t\"title\":\""+title+"\"," +
                 "\n\t\"description\":\""+description+"\"," +
@@ -194,6 +197,7 @@ public class CreateEventNotif extends AppCompatActivity {
                 "\n\t\"tags\":\n\t\t\t\"" + checked_tags + "\"\n\t\t\n}"
         );
 
+        Log.d(TAG, checked_tags.toString());
 
         Request request = new Request.Builder()
                 .url(Urls.EVENT_NOTIFICATION_URL)
@@ -231,6 +235,18 @@ public class CreateEventNotif extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private List<String> convertToQuoted(List<String> checked_fields) {
+
+        for (int i = 0; i < checked_fields.size(); i++) {
+            String stream;
+            stream = "\"" + checked_fields.get(i) + "\"";
+            checked_fields.set(i, stream);
+        }
+
+        return checked_fields;
+
     }
 
     // get all streams to fill the checkboxes
