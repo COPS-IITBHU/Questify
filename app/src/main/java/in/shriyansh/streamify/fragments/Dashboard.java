@@ -137,6 +137,16 @@ public class Dashboard extends Fragment {
         branch.setText(PreferenceUtils.getStringPreference(getActivity(), PreferenceUtils.PREF_USER_BRANCH));
         contact.setText(PreferenceUtils.getStringPreference(getActivity(), PreferenceUtils.PREF_USER_CONTACT));
         setProfilePic(profilepic);
+
+        register_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ChooseEvent.class);
+
+                getActivity().startActivity(intent);
+            }
+        });
+
         return view;
     }
 
