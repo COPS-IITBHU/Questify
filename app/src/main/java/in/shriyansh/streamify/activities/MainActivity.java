@@ -164,8 +164,8 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
 
         // Info: Hide FAB if user's not a position holder
         boolean isPostHolder = PreferenceUtils.getBooleanPreference(MainActivity.this,PREF_USER_POST_HOLDER);
-        if (!isPostHolder)
-            fab.setVisibility(View.GONE);
+//        if (!isPostHolder)
+//            fab.setVisibility(View.GONE);
 
         setSupportActionBar(toolbar);
         //TODO Search

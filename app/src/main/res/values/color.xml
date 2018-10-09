@@ -10,6 +10,7 @@
     <color name="teal500">#009688</color>
     <color name="teal300">#4DB6AC</color>
     <color name="white">#ffffffff</color>
+    <color name="black">#ff000000</color>
     <color name="register_background">#263238</color>
 
     <color name="transparent_light">#44444444</color>

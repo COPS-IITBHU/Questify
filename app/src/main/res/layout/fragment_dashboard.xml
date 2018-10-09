@@ -234,6 +234,19 @@
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp" />
 
+                    <TextView
+                        android:id="@+id/textView28"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="25dp"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:padding="8dp"
+                        android:text="You do not have any registered teams!!"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="18sp" />
+
+
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/teamrecycler"
                         android:layout_width="match_parent"
@@ -258,6 +271,19 @@
                         android:layout_width="match_parent"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp" />
+
+                    <TextView
+                        android:id="@+id/textView29"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="25dp"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:padding="8dp"
+                        android:text="You do not have any prizes as of now!!"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="18sp" />
+
 
                 </LinearLayout>
             </LinearLayout>

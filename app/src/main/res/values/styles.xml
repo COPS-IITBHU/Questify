@@ -62,6 +62,20 @@
         <item name="android:textColorHint">@color/white</item>
     </style>
 
+    <style name="EditTextHintForNotifCreator" parent="TextAppearance.AppCompat">
+        <!--<item name="android:textColor">@color/black</item>-->
+        <!--<item name="android:textColorHint">@color/black</item>-->
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@color/text_color_light</item>
+        <!--<item name="android:textSize">20sp</item>-->
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">@color/black</item>
+        <item name="colorControlNormal">@color/black</item>
+        <item name="colorControlActivated">@color/black</item>
+
+    </style>
+
+
     <!--For Search-->
     <style name="SearchViewTheme">
         <item name="colorControlActivated">@color/ColorPrimary</item>
