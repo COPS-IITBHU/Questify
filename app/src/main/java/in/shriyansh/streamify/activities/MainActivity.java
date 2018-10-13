@@ -142,8 +142,6 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
      * Call server to fetch all latest data of Notification, Events and Streams.
      */
     private void fetchLatestData() {
-//        getStreams(PreferenceUtils.getStringPreference(MainActivity.this,
-//                PreferenceUtils.PREF_USER_GLOBAL_ID));
         getNotifications(dbMethods.queryLastNotificationId() + "");
         getEvents(dbMethods.queryLastEventId()+ "");
     }
@@ -159,8 +157,8 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
 
         // Info: Hide FAB if user's not a position holder
         boolean isPostHolder = PreferenceUtils.getBooleanPreference(MainActivity.this,PREF_USER_POST_HOLDER);
-//        if (!isPostHolder)
-//            fab.setVisibility(View.GONE);
+        if (!isPostHolder)
+            fab.setVisibility(View.GONE);
 
         setSupportActionBar(toolbar);
         //TODO Search
@@ -269,9 +267,8 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
                 Log.d(TAG, resp.toString());
                 try {
                     String status = resp.getString(Constants.RESPONSE_STATUS_KEY);
-                    if (status.equals("200")) {
-                        long count = dbMethods.insertNotifications(resp.getJSONObject("data")
-                                .getJSONArray("notifications"));
+                    if (status.equals(Constants.RESPONSE_STATUS_VALUE_200)) {
+                        long count = dbMethods.insertNotifications(resp.getJSONArray("response"));
                         showNewItem(POSITION_NEWS,String.valueOf(count));
                     }
                 } catch (JSONException e) {
@@ -318,9 +315,8 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
                 Log.d(TAG, resp.toString());
                 try {
                     String status = resp.getString(Constants.RESPONSE_STATUS_KEY);
-                    if (status.equals(Constants.RESPONSE_STATUS_VALUE_OK)) {
-                        long count = dbMethods.insertEvents(resp.getJSONObject("data")
-                                .getJSONArray("events"));
+                    if (status.equals(Constants.RESPONSE_STATUS_VALUE_200)) {
+                        long count = dbMethods.insertEvents(resp.getJSONArray("response"));
                         showNewItem(POSITION_EVENTS,String.valueOf(count));
                     }
                 } catch (JSONException e) {

@@ -26,14 +26,9 @@ import in.shriyansh.streamify.utils.Constants;
 import in.shriyansh.streamify.utils.TimeUtils;
 import in.shriyansh.streamify.utils.Utils;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -119,20 +114,10 @@ public class NotificationsAdapter extends CursorAdapter implements Urls {
                 while (cursor.moveToNext()) {
                     String eventTitle = cursor.getString(cursor.getColumnIndex(
                             DbContract.Notifications.COLUMN_TITLE));
-                    String eventsSubtitle = cursor.getString(cursor.getColumnIndex(
-                            DbContract.Notifications.COLUMN_SUBTITLE));
                     String eventDescription = cursor.getString(cursor.getColumnIndex(
                             DbContract.Notifications.COLUMN_DESCRIPTION));
 
                     String notificationsStreamTitle = "";
-                    try {
-                        JSONObject streamJson = new JSONObject(cursor.getString(
-                                cursor.getColumnIndex(DbContract.Notifications.COLUMN_STREAM)));
-                        notificationsStreamTitle = streamJson.getString("title");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
                     String notificationAuthorName = "";
                     String notificationAuthorEmail = "";
                     try {
@@ -145,26 +130,6 @@ public class NotificationsAdapter extends CursorAdapter implements Urls {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                    int time = cursor.getInt(cursor.getColumnIndex(
-                            DbContract.Notifications.COLUMN_CREATED_AT));
-
-                    SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.DB_TIME_FORMAT,
-                            Locale.ENGLISH);
-                    sdf.setTimeZone(TimeZone.getTimeZone(TimeUtils.TIME_ZONE_INDIA));
-                    String date = sdf.format(Utils.settleTimeZoneDifference(time)
-                            * TimeUtils.MILLIS_IN_SECOND);
-                    String createdAt = date.replace("am","AM")
-                            .replace("pm","PM");
-
-                    //String creationTime=ago(creation);
-                    msg.append(eventTitle).append("\n").append(eventsSubtitle).append(" by ")
-                            .append(notificationsStreamTitle).append("\n");
-                    msg.append("\n").append(eventDescription).append("\n\n")
-                            .append(notificationAuthorName).append(" \n")
-                            .append(notificationAuthorEmail);
-                    msg.append("\n").append(createdAt);
-                    msg.append("\n-------------------------------\n");
 
                 }
             }
@@ -270,9 +235,6 @@ public class NotificationsAdapter extends CursorAdapter implements Urls {
                 contentImages[i].setVisibility(View.GONE);
             }
 
-            fetchAndSetContentData(cursor, contentImages, contentVideo, videoBox, moreImageBox,
-                    moreTextView);
-
             authorImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -353,58 +315,30 @@ public class NotificationsAdapter extends CursorAdapter implements Urls {
                                  final TextView stream, final TextView tag1, final TextView ago,
                                  final TextView link, final ImageView authorImage) {
         String notificationTitle;
-        String notificationSubtitle;
         String notificationDescription;
-        String notificationLink;
         String notificationAuthorName;
         String notificationAuthorImage;
-        String notificationsStreamTitle;
-        String notificationTag;
-        int newsAgo;
 
         notificationTitle = cursor.getString(cursor.getColumnIndex(
                 DbContract.Notifications.COLUMN_TITLE));
-        notificationSubtitle = cursor.getString(cursor.getColumnIndex(
-                DbContract.Notifications.COLUMN_SUBTITLE));
         notificationDescription = cursor.getString(cursor.getColumnIndex(
                 DbContract.Notifications.COLUMN_DESCRIPTION));
-        notificationLink = cursor.getString(cursor.getColumnIndex(
-                DbContract.Notifications.COLUMN_LINK));
-        newsAgo = cursor.getInt(cursor.getColumnIndex(DbContract.Notifications.COLUMN_CREATED_AT));
 
-        try {
-            JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
-                    DbContract.Notifications.COLUMN_AUTHOR)));
-            notificationAuthorName = authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME);
-            notificationAuthorImage = authorJson.getString(Constants.JSON_KEY_AUTHOR_IMAGE_URL);
-        } catch (JSONException e) {
-            e.printStackTrace();
+//        try {
+//            JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
+//                    DbContract.Notifications.COLUMN_AUTHOR)));
+//            notificationAuthorName = authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME);
+//            notificationAuthorImage = authorJson.getString(Constants.JSON_KEY_AUTHOR_IMAGE_URL);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
             notificationAuthorName = "";
             notificationAuthorImage = "";
-        }
-
-        try {
-            JSONObject streamJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
-                    DbContract.Notifications.COLUMN_STREAM)));
-            notificationsStreamTitle = streamJson.getString("title");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            notificationsStreamTitle = "";
-        }
-
-        try {
-            JSONObject tagJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
-                    DbContract.Notifications.COLUMN_TAGS)));
-            notificationTag = tagJson.getString("name") + " ";
-        } catch (JSONException e) {
-            e.printStackTrace();
-            notificationTag = "";
-        }
+//        }
 
         plugDataToView(title, subtitle, description, authorName, stream, tag1, ago, link,
-                authorImage, notificationTitle, notificationSubtitle, notificationDescription,
-                notificationAuthorName, notificationsStreamTitle, notificationTag, notificationLink,
-                notificationAuthorImage, newsAgo);
+                authorImage, notificationTitle, "", notificationDescription,
+                notificationAuthorName, "", "", "",
+                notificationAuthorImage);
     }
 
     private void plugDataToView(final TextView title, final TextView subtitle,
@@ -415,15 +349,13 @@ public class NotificationsAdapter extends CursorAdapter implements Urls {
                                 final String notificationDescription,
                                 final String notificationAuthorName,
                                 final String notificationsStreamTitle, final String notificationTag,
-                                final String notificationLink, final String notificationAuthorImage,
-                                final long newsAgo) {
+                                final String notificationLink, final String notificationAuthorImage) {
         title.setText(notificationTitle);
         subtitle.setText(notificationSubtitle);
         description.setText(notificationDescription);
         authorName.setText(notificationAuthorName);
         stream.setText(notificationsStreamTitle);
         tag1.setText(notificationTag);
-        ago.setText(TimeUtils.ago(Utils.settleTimeZoneDifference(newsAgo)));
         link.setText(notificationLink);
         setImageOnView(context, notificationAuthorImage, authorImage,
                 R.drawable.ic_person_black_24dp);
@@ -432,101 +364,6 @@ public class NotificationsAdapter extends CursorAdapter implements Urls {
             link.setVisibility(View.GONE);
         } else {
             link.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void fetchAndSetContentData(final Cursor cursor, final ImageView[] contentImages,
-                                        final ImageView contentVideo, final RelativeLayout videoBox,
-                                        final LinearLayout moreImageBox,
-                                        final TextView moreTextView) {
-        int notificationType;
-        notificationType = cursor.getInt(cursor.getColumnIndex(
-                DbContract.Notifications.COLUMN_TYPE));
-        //Fetching Contents
-        String[] contentUrls;
-        try {
-            JSONArray contentJsonArray = new JSONArray(cursor.getString(
-                    cursor.getColumnIndex(DbContract.Notifications.COLUMN_CONTENTS)));
-            //Count type to initialize the array
-            int contentActualCount = 0;
-            for (int i = 0;i < contentJsonArray.length();i++) {
-                JSONObject contentJson = contentJsonArray.getJSONObject(i);
-                if (notificationType == DbContract.Notifications.VALUE_TYPE_IMAGE
-                    && contentJson.getInt("type") == DbContract.Contents.VALUE_TYPE_IMAGE) {
-                    //this notification is about images
-                    contentActualCount++;
-                } else if (notificationType == DbContract.Notifications.VALUE_TYPE_VIDEO
-                    && contentJson.getInt("type") == DbContract.Contents.VALUE_TYPE_VIDEO) {
-                    //this is about video..take the first video
-                    contentActualCount++;
-                }
-            }
-
-            contentUrls = new String[contentActualCount];
-            int j = 0;
-            for (int i = 0;i < contentJsonArray.length();i++) {
-                JSONObject contentJson = contentJsonArray.getJSONObject(i);
-                if (notificationType == DbContract.Notifications.VALUE_TYPE_IMAGE) {
-                    //this notification is about images
-                    if (contentJson.getInt("type")
-                            == DbContract.Contents.VALUE_TYPE_IMAGE) {
-                        contentUrls[j++] = contentJson.getString("image");
-                    }
-                } else if (notificationType == DbContract.Notifications.VALUE_TYPE_VIDEO) {
-                    //this is about video..take the first video
-                    if (contentJson.getInt("type")
-                            == DbContract.Contents.VALUE_TYPE_VIDEO) {
-                        contentUrls[j++] = contentJson.getString("video_id");
-                    }
-                }
-            }
-            if (notificationType == DbContract.Notifications.VALUE_TYPE_IMAGE) {
-                try { //TODO fear of notification saying i'am a image but sends
-                    // video and filtered out in previous logic
-                    int showCount = contentActualCount;
-                    if (contentActualCount > 4) {
-                        moreImageBox.setVisibility(View.VISIBLE);
-                        moreTextView.setVisibility(View.VISIBLE);
-                        moreTextView.setText("+ " + (contentActualCount - 4) + "");
-                        showCount = 4;
-                    }
-
-                    switch (showCount) {
-                        case 4: contentImages[3].setVisibility(View.VISIBLE);
-                            setImageOnView(context, contentUrls[3], contentImages[3],
-                                    R.drawable.placeholder);
-                        case 3: contentImages[2].setVisibility(View.VISIBLE);
-                            setImageOnView(context, contentUrls[2], contentImages[2],
-                                    R.drawable.placeholder);
-                        case 2: contentImages[1].setVisibility(View.VISIBLE);
-                            setImageOnView(context, contentUrls[1], contentImages[1],
-                                    R.drawable.placeholder);
-                        case 1: contentImages[0].setVisibility(View.VISIBLE);
-                            setImageOnView(context, contentUrls[0], contentImages[0],
-                                    R.drawable.placeholder);
-                        default:
-                    }
-
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    e.printStackTrace();
-                }
-
-            } else if (notificationType == DbContract.Notifications.VALUE_TYPE_VIDEO) {
-                try { //TODO fear of notification saying i'am a video but sends
-                    // image and filtered out in previous logic
-                    contentVideo.setVisibility(View.VISIBLE);
-                    videoBox.setVisibility(View.VISIBLE);
-                    setImageOnView(context,
-                            Utils.getYoutubeVideoThumbnailFromId(contentUrls[0]),
-                            contentVideo, R.drawable.placeholder);
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        } catch (JSONException | NullPointerException e) {
-            e.printStackTrace();
         }
     }
 

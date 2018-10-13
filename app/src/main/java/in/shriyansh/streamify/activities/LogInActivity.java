@@ -234,7 +234,7 @@ public class LogInActivity extends AppCompatActivity {
                 LOGIN_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.e(TAG, response.toString());
+                Log.d(TAG, response.toString());
                 try {
                     String status = response.getString("status");
                     if (status.equals("200")) {

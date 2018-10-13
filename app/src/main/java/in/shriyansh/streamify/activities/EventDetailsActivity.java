@@ -101,14 +101,11 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
             String authorEmail;
             String authorImageUrl;
             String authorContact;
-            int dateTime;
 
             title = cursor.getString(cursor.getColumnIndex(DbContract.Events.COLUMN_TITLE));
-            subtitle = cursor.getString(cursor.getColumnIndex(DbContract.Events.COLUMN_SUBTITLE));
             description = cursor.getString(cursor.getColumnIndex(
                     DbContract.Events.COLUMN_DESCRIPTION));
             eventImageUrl = cursor.getString(cursor.getColumnIndex(DbContract.Events.COLUMN_IMAGE));
-            dateTime = cursor.getInt(cursor.getColumnIndex(DbContract.Events.COLUMN_TIME));
 
             try {
                 JSONObject streamJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
@@ -131,22 +128,22 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
                 e.printStackTrace();
             }
 
-            try {
-                JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
-                        DbContract.Events.COLUMN_AUTHOR)));
-                authorName = authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME);
-                authorEmail = authorJson.getString(Constants.JSON_KEY_AUTHOR_EMAIL);
-                authorImageUrl = authorJson.getString(Constants.JSON_KEY_AUTHOR_IMAGE_URL);
-                authorContact = authorJson.getString(Constants.JSON_KEY_AUTHOR_CONTACT);
-            } catch (JSONException e) {
-                e.printStackTrace();
+//            try {
+//                JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
+//                        DbContract.Events.COLUMN_AUTHOR)));
+//                authorName = authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME);
+//                authorEmail = authorJson.getString(Constants.JSON_KEY_AUTHOR_EMAIL);
+//                authorImageUrl = authorJson.getString(Constants.JSON_KEY_AUTHOR_IMAGE_URL);
+//                authorContact = authorJson.getString(Constants.JSON_KEY_AUTHOR_CONTACT);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
                 authorName = "";
                 authorEmail = "";
                 authorImageUrl = "";
                 authorContact = "";
-            }
+//            }
 
-            plugDataOnViews(title, subtitle, stream, description, eventImageUrl, dateTime,
+            plugDataOnViews(title, "", stream, description, eventImageUrl, Integer.getInteger(System.currentTimeMillis()/1000+""),
                     authorName, authorEmail, authorImageUrl, authorContact, lat, lng, locationName,
                     locationAddress, locationDescription);
         }

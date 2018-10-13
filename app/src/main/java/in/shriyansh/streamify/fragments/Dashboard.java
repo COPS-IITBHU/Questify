@@ -136,7 +136,7 @@ public class Dashboard extends Fragment {
         year.setText(PreferenceUtils.getStringPreference(getActivity(), PreferenceUtils.PREF_USER_YEAR_JOIN));
         branch.setText(PreferenceUtils.getStringPreference(getActivity(), PreferenceUtils.PREF_USER_BRANCH));
         contact.setText(PreferenceUtils.getStringPreference(getActivity(), PreferenceUtils.PREF_USER_CONTACT));
-        setProfilePic(profilepic);
+//        setProfilePic(profilepic);
 
         register_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -289,17 +289,17 @@ public class Dashboard extends Fragment {
         }
     }
 
-    public void setProfilePic(ImageView profilePic) {
-        try {
-            File f=new File(getActivity().getApplicationContext().getFilesDir().getPath(), "profile.jpg");
-            Bitmap b = decodeStream(new FileInputStream(f));
-            profilePic.setImageBitmap(b);
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-    }
+//    public void setProfilePic(ImageView profilePic) {
+//        try {
+//            File f=new File(getActivity().getApplicationContext().getFilesDir().getPath(), "profile.jpg");
+//            Bitmap b = decodeStream(new FileInputStream(f));
+//            profilePic.setImageBitmap(b);
+//        }
+//        catch (FileNotFoundException e)
+//        {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void onAttach(Context context) {
