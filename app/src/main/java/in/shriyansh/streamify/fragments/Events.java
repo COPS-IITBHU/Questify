@@ -111,9 +111,7 @@ public class Events extends Fragment implements Urls {
              * make network call
              * and set setRefreshing(false); after refresh
              */
-            getEvents(PreferenceUtils.getStringPreference(getActivity(),
-                    PreferenceUtils.PREF_USER_GLOBAL_ID),
-                    dbMethods.queryLastEventId() + "");
+            getEvents(dbMethods.queryLastEventId() + "");
             }
         });
 
@@ -187,9 +185,8 @@ public class Events extends Fragment implements Urls {
         return view;
     }
 
-    private void getEvents(String userId,String lastEventId) {
+    private void getEvents(String lastEventId) {
         Map<String, String> params = new HashMap<>();
-        params.put(Constants.EVENT_PARAM_USER_ID,userId);
         params.put(Constants.EVENT_PARAM_LAST_EVENT_ID,lastEventId);
         Log.d(TAG,params.toString());
 

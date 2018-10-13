@@ -225,7 +225,6 @@ public class News extends Fragment implements Urls {
 
     private void getNotifications(String userId, String lastNotificationId) {
         Map<String, String> params = new HashMap<>();
-        params.put(Constants.NOTIFICATION_PARAM_USER_ID,userId);
         params.put(Constants.NOTIFICATION_PARAM_LAST_NOTIFICATION_ID,lastNotificationId);
         Log.d(TAG,params.toString());
 

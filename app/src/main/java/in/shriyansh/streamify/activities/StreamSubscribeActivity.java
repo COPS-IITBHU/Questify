@@ -163,19 +163,16 @@ public class StreamSubscribeActivity extends AppCompatActivity {
                     JSONObject object = new JSONObject(jsonData);
 
                     String status = object.getString("status");
-                    if (status.equals("200")){
+                    if (status.equals("200")) {
                         // get stream titles
                         JSONArray array = object.getJSONArray("response");
 
                         // create a list
-                        for(int i=0;i<array.length(); ++i)
+                        for (int i = 0; i < array.length(); ++i)
                             myStreams.add(array.getJSONObject(i).getString("streamtitle"));
-                    } else if (status.equals("500")){
-                        // User has no subscribed stream
                     }
-                    else{
+                    else
                         throw new Exception("onResponse Status: " + status);
-                    }
                 }catch (Exception e){
                     // on failure response
                     Snackbar.make(findViewById(R.id.SubscribeStreamActivityMainLayout),

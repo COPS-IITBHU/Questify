@@ -32,10 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import in.shriyansh.streamify.R;
+import in.shriyansh.streamify.network.Urls;
 import in.shriyansh.streamify.utils.Constants;
 import in.shriyansh.streamify.utils.PreferenceUtils;
-
-import static in.shriyansh.streamify.network.Urls.LIST_ALL_EVENTS;
 
 public class ChooseEvent extends AppCompatActivity {
 
@@ -126,11 +125,12 @@ public class ChooseEvent extends AppCompatActivity {
 
 
     private void getEvents(final VolleyCallback callback) {
+        Map<String, String> params = new HashMap<>();
+        params.put(Constants.EVENT_PARAM_LAST_EVENT_ID,"-1");  // Get all events
+        Log.d(TAG,params.toString());
 
-        //Get All Events
-
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET,
-                LIST_ALL_EVENTS, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST,
+                Urls.GET_EVENTS, new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject resp) {

@@ -144,13 +144,8 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
     private void fetchLatestData() {
 //        getStreams(PreferenceUtils.getStringPreference(MainActivity.this,
 //                PreferenceUtils.PREF_USER_GLOBAL_ID));
-//        getNotifications(PreferenceUtils.getStringPreference(MainActivity.this,
-//                PreferenceUtils.PREF_USER_GLOBAL_ID),
-//                dbMethods.queryLastNotificationId() + "");
-//        getEvents(PreferenceUtils.getStringPreference(MainActivity.this,
-//                PreferenceUtils.PREF_USER_GLOBAL_ID),dbMethods.queryLastEventId() + "");
-
-
+        getNotifications(dbMethods.queryLastNotificationId() + "");
+        getEvents(dbMethods.queryLastEventId()+ "");
     }
 
     /**
@@ -259,12 +254,10 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
     /**
      * Fetches new notifications from the server using volley.
      *
-     * @param userId User'd global Id
      * @param lastNotificationId id of the last notification received
      */
-    private void getNotifications(String userId,String lastNotificationId) {
+    private void getNotifications(String lastNotificationId) {
         Map<String, String> params = new HashMap<>();
-        params.put(Constants.NOTIFICATION_PARAM_USER_ID,userId);
         params.put(Constants.NOTIFICATION_PARAM_LAST_NOTIFICATION_ID,lastNotificationId);
         Log.d(TAG,params.toString());
 
@@ -311,12 +304,10 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
     /**
      * Fetches new Events from the server using volley.
      *
-     * @param userId User's global Id
      * @param lastEventId id of the last event received
      */
-    private void getEvents(String userId,String lastEventId) {
+    private void getEvents(String lastEventId) {
         Map<String, String> params = new HashMap<>();
-        params.put(Constants.EVENT_PARAM_USER_ID,userId);
         params.put(Constants.EVENT_PARAM_LAST_EVENT_ID,lastEventId);
         Log.d(TAG,params.toString());
 
