@@ -3,7 +3,6 @@ package in.shriyansh.streamify.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import in.shriyansh.streamify.R;
 import in.shriyansh.streamify.utils.Constants;
@@ -14,8 +13,6 @@ import in.shriyansh.streamify.utils.PreferenceUtils;
  * status bar and navigation/system bar) with user interaction.
  */
 public class SplashScreen extends AppCompatActivity {
-    private static final String TAG = SplashScreen.class.getSimpleName();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,46 +37,17 @@ public class SplashScreen extends AppCompatActivity {
                     e.printStackTrace();
                 } finally {
                     boolean isRegistered = PreferenceUtils.getBooleanPreference(
-                        SplashScreen.this, PreferenceUtils.PREF_IS_REGISTERED);
-                    boolean isDetailsRegistered = PreferenceUtils.getBooleanPreference(
-                            SplashScreen.this, PreferenceUtils.PREF_IS_DETAILS_REGISTERED);
-                    if (isRegistered) {
-                        boolean isFcmRegistered = PreferenceUtils.getBooleanPreference(
-                            SplashScreen.this, PreferenceUtils.PREF_IS_FCM_REGISTERED);
-                        if (isFcmRegistered) {
-                            if (isDetailsRegistered) {
-                                logFcmToken();
-                                launchMainActivity();
-                            }
-                            else {
-                                launchMainActivity();
-                            }
-                        } else {
-                            launchRegisterActivity();
-                        }
-                    } else {
-                        launchRegisterActivity();
-                    }
+                        SplashScreen.this, PreferenceUtils.PREF_USER_LOGGED_IN);
+                    Intent intent;
+                    if (isRegistered)
+                        intent = new Intent(SplashScreen.this, MainActivity.class);
+                    else
+                        intent = new Intent(SplashScreen.this, RegisterActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
             }
         };
         timer.start();
-    }
-
-    private void launchRegisterActivity() {
-        Intent intent = new Intent(SplashScreen.this, RegisterActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    private void launchMainActivity() {
-        Intent intent = new Intent(SplashScreen.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    private void logFcmToken() {
-        Log.d(TAG, PreferenceUtils.getStringPreference(SplashScreen.this,
-            PreferenceUtils.PREF_FCM_TOKEN));
     }
 }

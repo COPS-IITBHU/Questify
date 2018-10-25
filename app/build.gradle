@@ -16,7 +16,6 @@ android {
     buildTypes {
         debug {
             buildConfigField 'String', "YoutubeApiKey", '""'
-            resValue 'string', "youtube_api_key", ""
             buildConfigField 'String', "GoogleMapAndroidApiKey", '""'
             resValue 'string', "google_maps_android_api_key", ""
         }
@@ -24,7 +23,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField 'String', "YoutubeApiKey", '""'
-            resValue 'string', "youtube_api_key", ""
             buildConfigField 'String', "GoogleMapAndroidApiKey", '""'
             resValue 'string', "google_maps_android_api_key", ""
         }
@@ -47,6 +45,8 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.miguelcatalan:materialsearchview:1.4.0'
     implementation 'com.google.firebase:firebase-core:16.0.3'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.zsoltsafrany:needle:1.0.0'

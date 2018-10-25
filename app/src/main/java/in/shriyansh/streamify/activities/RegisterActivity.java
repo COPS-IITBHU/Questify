@@ -76,7 +76,7 @@ public class RegisterActivity extends Activity implements Urls {
 
         initUi();
 
-        if (PreferenceUtils.getBooleanPreference(this,PreferenceUtils.PREF_IS_REGISTERED)) {
+        if (PreferenceUtils.getBooleanPreference(this,PreferenceUtils.PREF_USER_LOGGED_IN)) {
             if (PreferenceUtils.getBooleanPreference(RegisterActivity.this,
                     PreferenceUtils.PREF_IS_FCM_REGISTERED)) {
                 Intent intent = new Intent(RegisterActivity.this, MainActivity.class);

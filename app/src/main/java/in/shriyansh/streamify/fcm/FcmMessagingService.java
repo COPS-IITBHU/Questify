@@ -193,30 +193,25 @@ public class FcmMessagingService extends FirebaseMessagingService implements Url
                 intent.putExtra(EXTRA_NOTIFICATION_TYPE_KEY,NOTIFICATION_TYPE_NEWS);
                 JSONObject notification = data.getJSONObject("notification");
                 title = notification.getString("title");
-                subtitle = notification.getJSONObject("stream").getString("title");
-                streamUrl = Utils.getUsableDropboxUrl(notification.getJSONObject("author")
-                        .getString("image"));
+                subtitle = notification.getString("stream");
+
+                // TODO Stub image for now
+                streamUrl = "https://www.pexels.com/photo/face-facial-hair-fine-looking-guy-614810/";
+//                streamUrl = Utils.getUsableDropboxUrl(event.getJSONObject("author")
+//                        .getString("image"));
+
                 description = notification.getString("description");
             } else if (data.getInt("type") == FCM_TYPE_EVENT) {
                 intent.putExtra(EXTRA_NOTIFICATION_TYPE_KEY,NOTIFICATION_TYPE_EVENT);
                 JSONObject event = data.getJSONObject("event");
                 title = event.getString("title");
-
-                long timestamp = Utils.convertStringTimeToTimestamp(event.getString("time"),
-                        Constants.LARAVEL_TIME_FORMAT);
-                SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.DB_TIME_FORMAT,
-                        Locale.ENGLISH);
-                sdf.setTimeZone(TimeZone.getTimeZone(TimeUtils.TIME_ZONE_INDIA));
-                String date = sdf.format(timestamp * TimeUtils.MILLIS_IN_SECOND);
-                String time = date.replace("am","AM").replace("pm",
-                        "PM");
-
-                String venue = event.getJSONObject("location").getString("name");
-
-                subtitle = time + " at " + venue;
+                subtitle = event.getString("location");
                 description = event.getString("description");
-                streamUrl = Utils.getUsableDropboxUrl(event.getJSONObject("author")
-                        .getString("image"));
+
+                // TODO Stub image for now
+                streamUrl = "https://www.pexels.com/photo/face-facial-hair-fine-looking-guy-614810/";
+//                streamUrl = Utils.getUsableDropboxUrl(event.getJSONObject("author")
+//                        .getString("image"));
 
             } else {
                 return;

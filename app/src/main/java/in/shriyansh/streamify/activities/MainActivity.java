@@ -38,6 +38,8 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static in.shriyansh.streamify.utils.PreferenceUtils.PREF_USER_POST_HOLDER;
+
 
 public class MainActivity extends AppCompatActivity implements Urls, Dashboard.OnFragmentInteractionListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -47,10 +49,9 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
     private ViewPagerAdapter adapter;
     private SlidingTabLayout tabs;
 
-    private final CharSequence[] titles = {"0","0","0","0"};
+    private final CharSequence[] titles = {"0","0","0"};
     private static final int POSITION_NEWS = 0;
     private static final int POSITION_EVENTS = 1;
-    private static final int POSITION_STREAMS = 2;
 
     private DbMethods dbMethods;
     private RequestQueue volleyQueue;
@@ -141,15 +142,8 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
      * Call server to fetch all latest data of Notification, Events and Streams.
      */
     private void fetchLatestData() {
-//        getStreams(PreferenceUtils.getStringPreference(MainActivity.this,
-//                PreferenceUtils.PREF_USER_GLOBAL_ID));
-//        getNotifications(PreferenceUtils.getStringPreference(MainActivity.this,
-//                PreferenceUtils.PREF_USER_GLOBAL_ID),
-//                dbMethods.queryLastNotificationId() + "");
-//        getEvents(PreferenceUtils.getStringPreference(MainActivity.this,
-//                PreferenceUtils.PREF_USER_GLOBAL_ID),dbMethods.queryLastEventId() + "");
-
-
+        getNotifications(dbMethods.queryLastNotificationId() + "");
+        getEvents(dbMethods.queryLastEventId()+ "");
     }
 
     /**
@@ -160,6 +154,11 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
         fab = findViewById(R.id.fab);
         pager = findViewById(R.id.pager);
         tabs = findViewById(R.id.tabs);
+
+        // Info: Hide FAB if user's not a position holder
+        boolean isPostHolder = PreferenceUtils.getBooleanPreference(MainActivity.this,PREF_USER_POST_HOLDER);
+        if (!isPostHolder)
+            fab.setVisibility(View.GONE);
 
         setSupportActionBar(toolbar);
         //TODO Search
@@ -191,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,ChoosePostOrEvent.class);
+                Intent intent = new Intent(MainActivity.this,ChooseNotifType.class);
                 startActivity(intent);
             }
         });
@@ -235,8 +234,8 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_about) {
-            Intent intent = new Intent(MainActivity.this,AboutUsActivity.class);
+        if (id == R.id.action_streams) {
+            Intent intent = new Intent(MainActivity.this,StreamSubscribeActivity.class);
             startActivityForResult(intent, 6);
             return true;
         }
@@ -247,84 +246,16 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
 //            return true;
 //        }
 
-        /*
-        if (id == R.id.action_video) {
-            Intent intent = new Intent(MainActivity.this,VideoListDemoActivity.class);
-            startActivityForResult(intent, 6);
-            return true;
-        }
-        */
-
-        if (id == R.id.action_image) {
-            Intent intent = new Intent(MainActivity.this,ImageLibrary.class);
-            startActivityForResult(intent, 6);
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Fetches streams from the server using volley.
-     *
-     * @param userId User's global Id
-     */
-    private void getStreams(String userId) {
-            Map<String, String> params = new HashMap<>();
-//            params.put(Constants.STREAM_PARAM_USER_ID,userId);
-
-            params.put("email", PreferenceUtils.getStringPreference(MainActivity.this, PreferenceUtils.PREF_USER_EMAIL));
-
-            Log.d(TAG,params.toString());
-
-            JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST,
-                    GET_STREAMS, new JSONObject(params), new Response.Listener<JSONObject>() {
-
-                @Override
-                public void onResponse(JSONObject resp) {
-                    Log.d(TAG, resp.toString());
-                    try {
-                        String status = resp.getString(Constants.RESPONSE_STATUS_KEY);
-                        if (status.equals(Constants.RESPONSE_STATUS_VALUE_OK)) {
-                            long count = dbMethods.insertStreams(resp.getJSONObject("data")
-                                    .getJSONArray("streams"));
-                            showNewItem(POSITION_STREAMS,String.valueOf(count));
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d(TAG, "Error: " + error.toString());
-                }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put(Constants.HTTP_HEADER_CONTENT_TYPE_KEY,
-                            Constants.HTTP_HEADER_CONTENT_TYPE_JSON);
-                    return headers;
-                }
-            };
-            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    Constants.HTTP_INITIAL_TIME_OUT,
-                    Constants.HTTP_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            volleyQueue.add(stringRequest);
     }
 
     /**
      * Fetches new notifications from the server using volley.
      *
-     * @param userId User'd global Id
      * @param lastNotificationId id of the last notification received
      */
-    private void getNotifications(String userId,String lastNotificationId) {
+    private void getNotifications(String lastNotificationId) {
         Map<String, String> params = new HashMap<>();
-        params.put(Constants.NOTIFICATION_PARAM_USER_ID,userId);
         params.put(Constants.NOTIFICATION_PARAM_LAST_NOTIFICATION_ID,lastNotificationId);
         Log.d(TAG,params.toString());
 
@@ -336,9 +267,8 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
                 Log.d(TAG, resp.toString());
                 try {
                     String status = resp.getString(Constants.RESPONSE_STATUS_KEY);
-                    if (status.equals("200")) {
-                        long count = dbMethods.insertNotifications(resp.getJSONObject("data")
-                                .getJSONArray("notifications"));
+                    if (status.equals(Constants.RESPONSE_STATUS_VALUE_200)) {
+                        long count = dbMethods.insertNotifications(resp.getJSONArray("response"));
                         showNewItem(POSITION_NEWS,String.valueOf(count));
                     }
                 } catch (JSONException e) {
@@ -371,12 +301,10 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
     /**
      * Fetches new Events from the server using volley.
      *
-     * @param userId User's global Id
      * @param lastEventId id of the last event received
      */
-    private void getEvents(String userId,String lastEventId) {
+    private void getEvents(String lastEventId) {
         Map<String, String> params = new HashMap<>();
-        params.put(Constants.EVENT_PARAM_USER_ID,userId);
         params.put(Constants.EVENT_PARAM_LAST_EVENT_ID,lastEventId);
         Log.d(TAG,params.toString());
 
@@ -387,9 +315,8 @@ public class MainActivity extends AppCompatActivity implements Urls, Dashboard.O
                 Log.d(TAG, resp.toString());
                 try {
                     String status = resp.getString(Constants.RESPONSE_STATUS_KEY);
-                    if (status.equals(Constants.RESPONSE_STATUS_VALUE_OK)) {
-                        long count = dbMethods.insertEvents(resp.getJSONObject("data")
-                                .getJSONArray("events"));
+                    if (status.equals(Constants.RESPONSE_STATUS_VALUE_200)) {
+                        long count = dbMethods.insertEvents(resp.getJSONArray("response"));
                         showNewItem(POSITION_EVENTS,String.valueOf(count));
                     }
                 } catch (JSONException e) {

@@ -7,13 +7,14 @@
 
     android:layout_height="match_parent">
 
-    <com.miguelcatalan.materialsearchview.MaterialSearchView
-        android:id="@+id/search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="6dp">
+    <!-- Can uncomment it later to add search features-->
+    <!--<com.miguelcatalan.materialsearchview.MaterialSearchView-->
+        <!--android:id="@+id/search_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:elevation="6dp">-->
 
-    </com.miguelcatalan.materialsearchview.MaterialSearchView>
+    <!--</com.miguelcatalan.materialsearchview.MaterialSearchView>-->
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

@@ -21,17 +21,6 @@
         <!--android:title="Search"-->
         <!--app:showAsAction="always" />-->
 
-    <item android:id="@+id/action_image" android:title="Image Gallery"
-        android:icon="@drawable/ic_collections_white_24dp"
+    <item android:id="@+id/action_streams" android:title="Streams"
         android:orderInCategory="100" app:showAsAction="never" />
-
-    <!--
-    <item android:id="@+id/action_video" android:title="Video Gallery"
-        android:icon="@drawable/ic_video_library_white_24dp"
-        android:orderInCategory="100" app:showAsAction="never" />
-    -->
-
-    <item android:id="@+id/action_about" android:title="About Us"
-        android:orderInCategory="100" app:showAsAction="never" />
-
 </menu>

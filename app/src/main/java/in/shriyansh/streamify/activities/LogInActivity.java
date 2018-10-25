@@ -141,9 +141,87 @@ public class LogInActivity extends AppCompatActivity {
                 else {
 
                     login();
+                    getJoiningYear();
                 }
             }
         });
+
+    }
+
+    private void getJoiningYear() {
+
+        if (email.contains(".bce")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Biochemical Engineering");
+        }
+        else if (email.contains(".bme")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Biomedical Engineering");
+        }
+        else if (email.contains(".app") || email.contains(".phy")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Engineering Physics");
+        }
+        else if (email.contains(".mec")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Mechanical Engineering");
+        }
+        else if (email.contains(".apc")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Industrial Chemistry");
+        }
+        else if (email.contains(".mat") || email.contains(".apm")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Mathematics and Computing");
+        }
+        else if (email.contains(".che")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Chemical Engineering");
+        }
+        else if (email.contains(".cer")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Ceramics Engineering");
+        }
+        else if (email.contains(".min")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Mining Engineering");
+        }
+        else if (email.contains(".met")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Metallurgical Engineering");
+        }
+        else if (email.contains(".mst")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Material Science and Technology");
+        }
+        else if (email.contains(".phe")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Pharmaceutical Engineering");
+        }
+        else if (email.contains(".eee")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Electrical Engineering");
+        }
+        else if (email.contains(".cse")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Computer Science and Engineering");
+        }
+        else if (email.contains(".ece")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Electronics Engineering");
+        }
+        else if (email.contains(".civ")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Civil Engineering");
+        }
+        else if (email.contains(".hss")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_BRANCH, "Humanistic Studies");
+        }
+
+
+
+        if (email.contains("18")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_YEAR_JOIN, "2018");
+        }
+        else if (email.contains("17")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_YEAR_JOIN, "2017");
+        }
+        else if (email.contains("16")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_YEAR_JOIN, "2016");
+        }
+        else if (email.contains("15")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_YEAR_JOIN, "2015");
+        }
+        else if (email.contains("14")) {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_YEAR_JOIN, "2014");
+        }
+        else {
+            PreferenceUtils.setStringPreference(LogInActivity.this, PreferenceUtils.PREF_USER_YEAR_JOIN, "Earlier than 2014");
+        }
 
     }
 
@@ -156,7 +234,7 @@ public class LogInActivity extends AppCompatActivity {
                 LOGIN_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.e(TAG, response.toString());
+                Log.d(TAG, response.toString());
                 try {
                     String status = response.getString("status");
                     if (status.equals("200")) {
@@ -175,6 +253,9 @@ public class LogInActivity extends AppCompatActivity {
                         PreferenceUtils.setStringPreference(LogInActivity.this,
                                 PreferenceUtils.PREF_USER_ROLL,
                                 response.getJSONObject("response").getString("rollno"));
+                        PreferenceUtils.setBooleanPreference(LogInActivity.this,
+                                PreferenceUtils.PREF_USER_POST_HOLDER,
+                                response.getJSONObject("response").getBoolean("isPositionHolder"));
                         PreferenceUtils.setBooleanPreference(LogInActivity.this,
                                 PreferenceUtils.PREF_USER_LOGGED_IN,
                                 true);

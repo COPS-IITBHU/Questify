@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<CheckBox
-    android:id="@+id/stream_checkbox"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:text="Name"
-    xmlns:android="http://schemas.android.com/apk/res/android" />

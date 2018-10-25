@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -31,10 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import in.shriyansh.streamify.R;
+import in.shriyansh.streamify.network.Urls;
 import in.shriyansh.streamify.utils.Constants;
 import in.shriyansh.streamify.utils.PreferenceUtils;
-
-import static in.shriyansh.streamify.network.Urls.LIST_ALL_EVENTS;
 
 public class ChooseEvent extends AppCompatActivity {
 
@@ -42,6 +42,7 @@ public class ChooseEvent extends AppCompatActivity {
     private String[] events;
     private RadioButton[] event;
     private Button btn_reg_event;
+    private LinearLayout progress_layout;
 
     private String[] available_events;
     private String[] corresponding_event_ids;
@@ -61,41 +62,75 @@ public class ChooseEvent extends AppCompatActivity {
 
         events_radio = findViewById(R.id.events_radio);
         events = getResources().getStringArray(R.array.events_array);
+//        progress_layout = findViewById(R.id.layout_progress_choose_event);
 
-        getEvents();
-        Log.e(TAG, available_events[0]);
-        event = new RadioButton[available_events.length];
+        events_radio.setVisibility(View.GONE);
+        progress_layout.setVisibility(View.VISIBLE);
 
-        for(int i=0; i<available_events.length; i++) {
-            event[i] = new RadioButton(this);
-            event[i].setText(available_events[i]);
-            event[i].setId(i);
-            event[i].setTextColor(Color.WHITE);
-            event[i].setTextSize(getResources().getDimension(R.dimen.radioTextSize));
-            events_radio.addView(event[i]);
-        }
+        getEvents(new VolleyCallback() {
+            @Override
+            public void onSuccess(JSONArray result) {
+                available_events = new String[result.length()];
+                corresponding_event_ids = new String[result.length()];
+
+                try {
+                    for (int i = 0; i < result.length(); i++) {
+                        available_events[i] = result.getJSONObject(i).getString("title");
+                        corresponding_event_ids[i] = result.getJSONObject(i).getString("id");
+                    }
+
+                    Log.e(TAG, available_events[0]);
+                    event = new RadioButton[available_events.length];
+
+                    for(int i=0; i<available_events.length; i++) {
+                        event[i] = new RadioButton(ChooseEvent.this);
+                        event[i].setText(available_events[i]);
+                        event[i].setId(i);
+                        event[i].setTextColor(Color.WHITE);
+                        event[i].setTextSize(getResources().getDimension(R.dimen.radioTextSize));
+                        events_radio.addView(event[i]);
+                    }
+
+                    set_selected_event_id(corresponding_event_ids, events_radio);
+
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        events_radio.setVisibility(View.VISIBLE);
+        progress_layout.setVisibility(View.GONE);
+
+    }
+
+    private void set_selected_event_id(final String[] corresp_event_ids, final RadioGroup events_radiogrp) {
 
         btn_reg_event = findViewById(R.id.btn_event_reg);
         btn_reg_event.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String event_id = corresponding_event_ids[events_radio.getCheckedRadioButtonId()];
+                String event_id = corresp_event_ids[events_radiogrp.getCheckedRadioButtonId()];
                 PreferenceUtils.setStringPreference(ChooseEvent.this, PreferenceUtils.PREF_USER_EVENT, event_id);
+                Log.e(TAG, event_id);
 
                 Intent intent = new Intent(ChooseEvent.this, ChooseNumberMembers.class);
                 startActivity(intent);
                 finish();
             }
         });
-
     }
 
-    private void getEvents() {
 
-        //Get All Events
+    private void getEvents(final VolleyCallback callback) {
+        Map<String, String> params = new HashMap<>();
+        params.put(Constants.EVENT_PARAM_LAST_EVENT_ID,"-1");  // Get all events
+        Log.d(TAG,params.toString());
 
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET,
-                LIST_ALL_EVENTS, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST,
+                Urls.GET_EVENTS, new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject resp) {
@@ -105,12 +140,8 @@ public class ChooseEvent extends AppCompatActivity {
                     if (status.equals(Constants.RESPONSE_STATUS_VALUE_200)) {
 
                         JSONArray jsonArray = resp.getJSONArray("response");
-                        available_events = new String[jsonArray.length()];
-                        corresponding_event_ids = new String[jsonArray.length()];
-                        for (int i=0; i<jsonArray.length(); i++) {
-                            available_events[i] = jsonArray.getJSONObject(i).getString("title");
-                            corresponding_event_ids[i] = jsonArray.getJSONObject(i).getString("id");
-                        }
+
+                        callback.onSuccess(jsonArray);
 
                     }
                     else {
@@ -133,6 +164,10 @@ public class ChooseEvent extends AppCompatActivity {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         volleyQueue.add(stringRequest);
 
+    }
+
+    private interface VolleyCallback {
+        void onSuccess(JSONArray result);
     }
 
 }

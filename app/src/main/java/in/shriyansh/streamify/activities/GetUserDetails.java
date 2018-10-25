@@ -1,27 +1,18 @@
 package in.shriyansh.streamify.activities;
 
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Toast;
 
 import in.shriyansh.streamify.ui.LabelledSpinner;
@@ -33,7 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
 import in.shriyansh.streamify.R;
 
@@ -51,7 +41,7 @@ public class GetUserDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_user_details);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         branch_array = getResources().getStringArray(R.array.branch_array);
@@ -72,7 +62,7 @@ public class GetUserDetails extends AppCompatActivity {
         submit_button =  findViewById(R.id.btn_submit);
 
         PreferenceUtils.setBooleanPreference(GetUserDetails.this,
-                PreferenceUtils.PREF_IS_DETAILS_REGISTERED,false);
+                PreferenceUtils.PREF_USER_LOGGED_IN,false);
 
         progress_layout = findViewById(R.id.layout_progress);
 
@@ -81,24 +71,13 @@ public class GetUserDetails extends AppCompatActivity {
         submit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if (!PreferenceUtils.getBooleanPreference(GetUserDetails.this, PreferenceUtils.PREF_IS_DETAILS_REGISTERED)) {
-                    submit_button.setVisibility(View.GONE);
-                    progress_layout.setVisibility(View.VISIBLE);
-
-                    checkCreds();
-                }
-
-                else {
-                    submit_button.setVisibility(View.GONE);
-                    progress_layout.setVisibility(View.VISIBLE);
-
-                    Intent intent = new Intent(
-                            GetUserDetails.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-
+                submit_button.setVisibility(View.GONE);
+                progress_layout.setVisibility(View.VISIBLE);
+                PreferenceUtils.setBooleanPreference(GetUserDetails.this,
+                        PreferenceUtils.PREF_USER_LOGGED_IN,true);
+                Intent intent = new Intent(GetUserDetails.this, MainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -117,29 +96,6 @@ public class GetUserDetails extends AppCompatActivity {
                 startActivityForResult(chooserIntent, PICK_IMAGE);
             }
         });
-
-
-    }
-
-    private void checkCreds() {
-
-        boolean cancel = false;
-        View focusView = null;
-
-
-        if (cancel) {
-            focusView.requestFocus();
-        }
-        else {
-
-            PreferenceUtils.setBooleanPreference(GetUserDetails.this,
-                    PreferenceUtils.PREF_IS_DETAILS_REGISTERED,true);
-
-            Intent intent = new Intent(
-                    GetUserDetails.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
 
 
     }

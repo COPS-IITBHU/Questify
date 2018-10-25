@@ -238,20 +238,14 @@ public class GetOptionalProfilePic extends AppCompatActivity {
 //                        PreferenceUtils.setStringPreference(GetOptionalProfilePic.this,
 //                                PreferenceUtils.PREF_USER_GLOBAL_ID, userGlobalId);
                         PreferenceUtils.setBooleanPreference(GetOptionalProfilePic.this,
-                                PreferenceUtils.PREF_IS_REGISTERED,true);
-                        PreferenceUtils.setBooleanPreference(GetOptionalProfilePic.this,
                                 PreferenceUtils.PREF_IS_FCM_REGISTERED, true);
-                        PreferenceUtils.setBooleanPreference(GetOptionalProfilePic.this,
-                                PreferenceUtils.PREF_IS_DETAILS_REGISTERED, true);
                         PreferenceUtils.setBooleanPreference(GetOptionalProfilePic.this,
                                 PreferenceUtils.PREF_USER_LOGGED_IN, true);
 
 
-                        if (PreferenceUtils.getBooleanPreference(GetOptionalProfilePic.this, PreferenceUtils.PREF_IS_REGISTERED)) {
-                            Intent intent = new Intent(GetOptionalProfilePic.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                        Intent intent = new Intent(GetOptionalProfilePic.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
 
                     else if (resp.getString("response").equals("User with same email exists")) {

@@ -35,7 +35,6 @@ import com.android.volley.toolbox.Volley;
 
 import in.shriyansh.streamify.R;
 import in.shriyansh.streamify.activities.ImageLibrary;
-import in.shriyansh.streamify.activities.VideoListDemoActivity;
 import in.shriyansh.streamify.adapters.NotificationsAdapter;
 import in.shriyansh.streamify.database.DbContract;
 import in.shriyansh.streamify.database.DbMethods;
@@ -114,47 +113,43 @@ public class News extends Fragment implements Urls {
         newsRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getNotifications(PreferenceUtils.getStringPreference(getActivity(),
-                        PreferenceUtils.PREF_USER_GLOBAL_ID),
+                getNotifications(
                         dbMethods.queryLastNotificationId() + "");
             }
         });
-        notificationsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (l != 1) {
-                    Cursor cursor = dbMethods.queryNotifications(new String[]{
-                            DbContract.Notifications.COLUMN_TYPE,
-                            DbContract.Notifications.COLUMN_GLOBAL_ID,
-                            DbContract.Notifications.COLUMN_TITLE},
-                            DbContract.Notifications._ID + " = ?",
-                            new String[]{l + ""},null,0);
-                    int newsType = 0;
-                    int newsGlobalId = 0;
-                    String title = "";
-                    while (cursor.moveToNext()) {
-                        newsType = cursor.getInt(cursor.getColumnIndex(
-                                DbContract.Notifications.COLUMN_TYPE));
-                        newsGlobalId = cursor.getInt(cursor.getColumnIndex(
-                                DbContract.Notifications.COLUMN_GLOBAL_ID));
-                        title = cursor.getString(cursor.getColumnIndex(
-                                DbContract.Notifications.COLUMN_TITLE));
-                    }
-                    if (newsType == DbContract.Notifications.VALUE_TYPE_IMAGE) {
-                        Intent intent = new Intent(getActivity(), ImageLibrary.class);
-                        intent.putExtra(NEWS_TITLE_KEY,title);
-                        intent.putExtra(ImageLibrary.INTENT_KEY_NOTIFICATION_GLOBAL_ID,
-                                newsGlobalId);
-                        startActivityForResult(intent, 3);
-                    } else if (newsType == DbContract.Notifications.VALUE_TYPE_VIDEO) {
-                        Intent intent = new Intent(getActivity(), VideoListDemoActivity.class);
-                        intent.putExtra(VideoListDemoActivity.INTENT_KEY_NOTIFICATION_GLOBAL_ID,
-                                newsGlobalId);
-                        startActivityForResult(intent, 3);
-                    }
-                }
-            }
-        });
+//        notificationsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                if (l != 1) {
+//                    Cursor cursor = dbMethods.queryNotifications(new String[]{
+//                            DbContract.Notifications.COLUMN_TYPE,
+//                            DbContract.Notifications.COLUMN_GLOBAL_ID,
+//                            DbContract.Notifications.COLUMN_TITLE},
+//                            DbContract.Notifications._ID + " = ?",
+//                            new String[]{l + ""},null,0);
+//                    int newsType = 0;
+//                    int newsGlobalId = 0;
+//                    String title = "";
+//                    while (cursor.moveToNext()) {
+//                        newsType = cursor.getInt(cursor.getColumnIndex(
+//                                DbContract.Notifications.COLUMN_TYPE));
+//                        newsGlobalId = cursor.getInt(cursor.getColumnIndex(
+//                                DbContract.Notifications.COLUMN_GLOBAL_ID));
+//                        title = cursor.getString(cursor.getColumnIndex(
+//                                DbContract.Notifications.COLUMN_TITLE));
+//                    }
+//                    if (newsType == DbContract.Notifications.VALUE_TYPE_IMAGE) {
+//                        Intent intent = new Intent(getActivity(), ImageLibrary.class);
+//                        intent.putExtra(NEWS_TITLE_KEY,title);
+//                        intent.putExtra(ImageLibrary.INTENT_KEY_NOTIFICATION_GLOBAL_ID,
+//                                newsGlobalId);
+//                        startActivityForResult(intent, 3);
+//                    } else if (newsType == DbContract.Notifications.VALUE_TYPE_VIDEO) {
+//                        // TODO Dont send video type news notifs
+//                    }
+//                }
+//            }
+//        });
 
         notificationsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         notificationsListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
@@ -227,9 +222,8 @@ public class News extends Fragment implements Urls {
         }
     };
 
-    private void getNotifications(String userId, String lastNotificationId) {
+    private void getNotifications(String lastNotificationId) {
         Map<String, String> params = new HashMap<>();
-        params.put(Constants.NOTIFICATION_PARAM_USER_ID,userId);
         params.put(Constants.NOTIFICATION_PARAM_LAST_NOTIFICATION_ID,lastNotificationId);
         Log.d(TAG,params.toString());
 
@@ -242,8 +236,7 @@ public class News extends Fragment implements Urls {
                 try {
                     String status = resp.getString(Constants.RESPONSE_STATUS_KEY);
                     if (status.equals(Constants.RESPONSE_STATUS_VALUE_OK)) {
-                        long count = dbMethods.insertNotifications(resp.getJSONObject("data")
-                                .getJSONArray("notifications"));
+                        long count = dbMethods.insertNotifications(resp.getJSONArray("response"));
                         notificationsAdapter.changeCursor(dbMethods.queryNotifications(
                                 null, null, null,
                                 DbContract.Notifications.COLUMN_GLOBAL_ID

@@ -1,15 +1,8 @@
 package in.shriyansh.streamify.utils;
 
-import in.shriyansh.streamify.BuildConfig;
-
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by shriyansh on 9/9/15.
- */
 public class Constants {
-    public static final String YOUTUBE_DEVELOPER_KEY = BuildConfig.YoutubeApiKey;
-    public static final String GOOGLE_MAPS_ANDROID_API_KEY = BuildConfig.GoogleMapAndroidApiKey;
 
     public static final String DISPLAY_MESSAGE_ACTION =
             "com.shriyansh.sntc.gcm.DISPLAY_MESSAGE";
@@ -29,28 +22,12 @@ public class Constants {
     public static final int HTTP_INITIAL_TIME_OUT = 10000;
     public static final int HTTP_RETRIES = 0;
 
-    public static final String FEEDBACK_PARAM_USER_ID = "user_id";
-    public static final String FEEDBACK_PARAM_TEXT = "text";
-
-    public static final String STREAM_PARAM_USER_ID = "user_id";
-
-    public static final String NOTIFICATION_PARAM_USER_ID = "user_id";
-    public static final String NOTIFICATION_PARAM_LAST_NOTIFICATION_ID = "last_notification_id";
-
-    public static final String EVENT_PARAM_USER_ID = "user_id";
-    public static final String EVENT_PARAM_LAST_EVENT_ID = "last_event_id";
-
-    public static final String POST_PARAM_USER_ID = "user_id";
-    public static final String POST_PARAM_TYPE = "type";
-    public static final String POST_PARAM_TITLE = "title";
-    public static final String POST_PARAM_CONTENT = "content";
+    public static final String NOTIFICATION_PARAM_LAST_NOTIFICATION_ID = "id";
+    public static final String EVENT_PARAM_LAST_EVENT_ID = "id";
 
     public static final String STREAM_FEEDBACK_PARAM_USER_ID = "user_id";
     public static final String STREAM_FEEDBACK_PARAM_STREAM_ID = "stream_id";
     public static final String STREAM_FEEDBACK_PARAM_TEXT = "text";
-
-    public static final String STREAM_SUBSCRIBE_PARAM_USER_ID = "user_id";
-    public static final String STREAM_SUBSCRIBE_PARAM_STREAM_ID = "stream_id";
 
     /**
      * Intent extra keys.

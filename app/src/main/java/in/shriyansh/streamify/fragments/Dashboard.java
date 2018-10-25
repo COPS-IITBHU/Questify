@@ -136,98 +136,94 @@ public class Dashboard extends Fragment {
         year.setText(PreferenceUtils.getStringPreference(getActivity(), PreferenceUtils.PREF_USER_YEAR_JOIN));
         branch.setText(PreferenceUtils.getStringPreference(getActivity(), PreferenceUtils.PREF_USER_BRANCH));
         contact.setText(PreferenceUtils.getStringPreference(getActivity(), PreferenceUtils.PREF_USER_CONTACT));
-        setProfilePic(profilepic);
+//        setProfilePic(profilepic);
 
+        register_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ChooseEvent.class);
 
-//        register_btn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), ChooseEvent.class);
-//
-//                getActivity().startActivity(intent);
-//            }
-//        });
+                getActivity().startActivity(intent);
+            }
+        });
 
+        return view;
+    }
 
-        /*****************************/
-        //JSON object request
-
+    void refreshTeamList(){
         Map<String,String> params = new HashMap<>();
         params.put("email", PreferenceUtils.getStringPreference(getActivity(), PreferenceUtils.PREF_USER_EMAIL));
 
         final RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
 
-            JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.POST,
-                    GET_PAST_TEAMS, new JSONObject(params), new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.POST,
+                GET_PAST_TEAMS, new JSONObject(params), new Response.Listener<JSONObject>() {
 
 
-                @Override
-                public void onResponse(JSONObject response) {
+            @Override
+            public void onResponse(JSONObject response) {
 
-                    try {
-                        if (response.getString("status").equals("200")) {
-                            team_name = new String[response.getJSONArray("response").length()];
-                            team_id = new String[response.getJSONArray("response").length()];
-                            Log.e(TAG, "***************************");
-                            Log.e(TAG, response.toString());
-                            Log.e(TAG, "***************************");
-                            Log.e(TAG, Integer.toString(response.length()));
-                            Log.e(TAG, "***************************");
+                try {
+                    if (response.getString("status").equals("200")) {
+                        team_name = new String[response.getJSONArray("response").length()];
+                        team_id = new String[response.getJSONArray("response").length()];
+                        Log.e(TAG, "***************************");
+                        Log.e(TAG, response.toString());
+                        Log.e(TAG, "***************************");
+                        Log.e(TAG, Integer.toString(response.length()));
+                        Log.e(TAG, "***************************");
 
-                            if (response.length() != 0) {
-                                for (int i = 0; i < response.length(); i++) {
+                        if (response.length() != 0) {
+                            for (int i = 0; i < response.length(); i++) {
 
-                                    try {
+                                try {
 //                            team_name[i] = response.getJSONObject(i).getString("team_name");
-                                        team_id[i] = response.getJSONArray("response").getJSONObject(i).getString("teamid");
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                                    team_id[i] = response.getJSONArray("response").getJSONObject(i).getString("teamid");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            } else {
-                                Toast.makeText(getActivity(), "No teams", Toast.LENGTH_LONG).show();
                             }
-
-                            /*****************************/
-
-                            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-                            team_recycler.setLayoutManager(llm);
-
-                            RVAdapter adapter = new RVAdapter(team_id);             //change arguments here if API return changes
-                            team_recycler.setAdapter(adapter);
-
-                            /*********************************/
-
+                        } else {
+                            Toast.makeText(getActivity(), "No teams", Toast.LENGTH_LONG).show();
                         }
 
-                        else if (response.getString("response").equals("No teams for given email ID exists")) {
-                            Toast.makeText(getActivity(), "You are not registered in any teams", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    catch (JSONException e) {
-                        e.printStackTrace();
+                        /*****************************/
+
+                        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+                        team_recycler.setLayoutManager(llm);
+
+                        RVAdapter adapter = new RVAdapter(team_id);             //change arguments here if API return changes
+                        team_recycler.setAdapter(adapter);
+
+                        /*********************************/
+
                     }
 
+                    else if (response.getString("response").equals("No teams for given email ID exists")) {
+                        Toast.makeText(getActivity(), "You are not registered in any teams", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getActivity(), "WHOOPS!! Something went wrong (ResponseError)", Toast.LENGTH_LONG).show();
-                    error.printStackTrace();
+                catch (JSONException e) {
+                    e.printStackTrace();
                 }
+
             }
-            );
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getActivity(), "WHOOPS!! Something went wrong (ResponseError)", Toast.LENGTH_LONG).show();
+                error.printStackTrace();
+            }
+        }
+        );
 
-            jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    Constants.HTTP_INITIAL_TIME_OUT,
-                    Constants.HTTP_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                Constants.HTTP_INITIAL_TIME_OUT,
+                Constants.HTTP_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
 
-            requestQueue.add(jsonArrayRequest);
-
-
-        return view;
+        requestQueue.add(jsonArrayRequest);
     }
 
 
@@ -293,17 +289,17 @@ public class Dashboard extends Fragment {
         }
     }
 
-    public void setProfilePic(ImageView profilePic) {
-        try {
-            File f=new File(getActivity().getApplicationContext().getFilesDir().getPath(), "profile.jpg");
-            Bitmap b = decodeStream(new FileInputStream(f));
-            profilePic.setImageBitmap(b);
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-    }
+//    public void setProfilePic(ImageView profilePic) {
+//        try {
+//            File f=new File(getActivity().getApplicationContext().getFilesDir().getPath(), "profile.jpg");
+//            Bitmap b = decodeStream(new FileInputStream(f));
+//            profilePic.setImageBitmap(b);
+//        }
+//        catch (FileNotFoundException e)
+//        {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void onAttach(Context context) {

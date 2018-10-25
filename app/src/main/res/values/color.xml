@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ColorPrimary">#263238</color>
-    <color name="ColorPrimaryAlpha">#803f51b5</color>
-    <color name="light_indigo">#9fa8da</color>
     <color name="ColorPrimaryDark">#455a64</color>
     <color name="tabsScrollColor">#ffffffff</color>
     <color name="colorGrey">#cccccc</color>
@@ -10,14 +8,12 @@
     <color name="text_color_light">#777777</color>
     <color name="pink500">#e91e63</color>
     <color name="teal500">#009688</color>
-    <color name="teallighht">#50009688</color>
     <color name="teal300">#4DB6AC</color>
     <color name="white">#ffffffff</color>
-    <color name="grey">#00ff00</color>
+    <color name="black">#ff000000</color>
     <color name="register_background">#263238</color>
 
     <color name="transparent_light">#44444444</color>
-    <color name="transparent_dark">#AA263238</color>
     <color name="transparent_dark2">#CC263238</color>
 
     <color name="widget_labelled_spinner">@color/white</color>

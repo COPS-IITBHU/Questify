@@ -39,7 +39,6 @@ import in.shriyansh.streamify.database.DbContract;
 import in.shriyansh.streamify.database.DbMethods;
 import in.shriyansh.streamify.network.Urls;
 import in.shriyansh.streamify.utils.Constants;
-import in.shriyansh.streamify.utils.PreferenceUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -111,9 +110,7 @@ public class Events extends Fragment implements Urls {
              * make network call
              * and set setRefreshing(false); after refresh
              */
-            getEvents(PreferenceUtils.getStringPreference(getActivity(),
-                    PreferenceUtils.PREF_USER_GLOBAL_ID),
-                    dbMethods.queryLastEventId() + "");
+            getEvents(dbMethods.queryLastEventId() + "");
             }
         });
 
@@ -187,9 +184,8 @@ public class Events extends Fragment implements Urls {
         return view;
     }
 
-    private void getEvents(String userId,String lastEventId) {
+    private void getEvents(String lastEventId) {
         Map<String, String> params = new HashMap<>();
-        params.put(Constants.EVENT_PARAM_USER_ID,userId);
         params.put(Constants.EVENT_PARAM_LAST_EVENT_ID,lastEventId);
         Log.d(TAG,params.toString());
 
@@ -201,9 +197,8 @@ public class Events extends Fragment implements Urls {
                 Log.d(TAG, resp.toString());
                 try {
                     String status = resp.getString(Constants.RESPONSE_STATUS_KEY);
-                    if (status.equals(Constants.RESPONSE_STATUS_VALUE_OK)) {
-                        long count = dbMethods.insertEvents(resp.getJSONObject("data")
-                                .getJSONArray("events"));
+                    if (status.equals(Constants.RESPONSE_STATUS_VALUE_200)) {
+                        long count = dbMethods.insertEvents(resp.getJSONArray("response"));
                         eventsAdapter.changeCursor(dbMethods.queryEvents(null,
                                 null, null,
                                 DbContract.Events.COLUMN_GLOBAL_ID + " DESC ", 0));

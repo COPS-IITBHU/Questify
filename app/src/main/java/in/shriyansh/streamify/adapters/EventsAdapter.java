@@ -119,8 +119,6 @@ public class EventsAdapter extends CursorAdapter implements Urls {
                 while (cursor.moveToNext()) {
                     String eventTitle = cursor.getString(cursor.getColumnIndex(
                             DbContract.Events.COLUMN_TITLE));
-                    String eventSubtitle = cursor.getString(cursor.getColumnIndex(
-                            DbContract.Events.COLUMN_SUBTITLE));
                     String eventDescription = cursor.getString(cursor.getColumnIndex(
                             DbContract.Events.COLUMN_DESCRIPTION));
 
@@ -133,10 +131,6 @@ public class EventsAdapter extends CursorAdapter implements Urls {
                         e.printStackTrace();
                     }
 
-                    int creation = cursor.getInt(cursor.getColumnIndex(
-                            DbContract.Events.COLUMN_CREATED_AT));
-                    int time = cursor.getInt(cursor.getColumnIndex(DbContract.Events.COLUMN_TIME));
-
                     String eventLocationName = "";
                     try {
                         JSONObject venueJson = new JSONObject(cursor.getString(
@@ -148,36 +142,18 @@ public class EventsAdapter extends CursorAdapter implements Urls {
 
                     String eventAuthorName = "";
                     String eventAuthorEmail = "";
-                    try {
-                        JSONObject authorJson = new JSONObject(cursor.getString(
-                                cursor.getColumnIndex(DbContract.Events.COLUMN_AUTHOR)));
-                        eventAuthorName = authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME);
-                        eventAuthorEmail = authorJson.getString(Constants.JSON_KEY_AUTHOR_EMAIL);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+//                        JSONObject authorJson = new JSONObject(cursor.getString(
+//                                cursor.getColumnIndex(DbContract.Events.COLUMN_AUTHOR)));
+//                        eventAuthorName = authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME);
+//                        eventAuthorEmail = authorJson.getString(Constants.JSON_KEY_AUTHOR_EMAIL);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
 
                     SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.DB_TIME_FORMAT,
                             Locale.ENGLISH);
                     sdf.setTimeZone(TimeZone.getTimeZone(TimeUtils.TIME_ZONE_INDIA));
-                    String creationDate = sdf.format(Utils.settleTimeZoneDifference(
-                            creation) * TimeUtils.MILLIS_IN_SECOND);
-                    String creationTime = creationDate.replace("am","AM")
-                            .replace("pm","PM");
-
-                    String occuringDate = sdf.format(
-                            Utils.settleTimeZoneDifference(time) * TimeUtils.MILLIS_IN_SECOND);
-                    String occuringTime = occuringDate.replace("am","AM")
-                            .replace("pm","PM");
-
-                    msg.append(eventTitle).append("\n").append(eventSubtitle).append(" by ")
-                            .append(eventStreamTitle).append("\n");
-                    msg.append("\n").append(eventDescription).append("\n\n").append(occuringTime)
-                            .append(" at ").append(eventLocationName);
-                    msg.append("\n\n").append(eventAuthorName).append(" \n")
-                            .append(eventAuthorEmail);
-                    msg.append("\n").append(creationTime);
-                    msg.append("\n-----------------------------\n");
                 }
             }
             it.remove(); // avoids a ConcurrentModificationException
@@ -312,20 +288,20 @@ public class EventsAdapter extends CursorAdapter implements Urls {
         int position = (Integer) view.getTag();
         cursor.moveToPosition(position);
 
-        try {
-            JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
-                    DbContract.Events.COLUMN_AUTHOR)));
-            streamAuthorName = authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME);
-            streamAuthorEmail = authorJson.getString(Constants.JSON_KEY_AUTHOR_EMAIL);
-            streamAuthorContact = authorJson.getString(Constants.JSON_KEY_AUTHOR_CONTACT);
-            streamAuthorImage = authorJson.getString(Constants.JSON_KEY_AUTHOR_IMAGE_URL);
-        } catch (JSONException e) {
-            e.printStackTrace();
+//        try {
+//            JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
+//                    DbContract.Events.COLUMN_AUTHOR)));
+//            streamAuthorName = authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME);
+//            streamAuthorEmail = authorJson.getString(Constants.JSON_KEY_AUTHOR_EMAIL);
+//            streamAuthorContact = authorJson.getString(Constants.JSON_KEY_AUTHOR_CONTACT);
+//            streamAuthorImage = authorJson.getString(Constants.JSON_KEY_AUTHOR_IMAGE_URL);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
             streamAuthorName = "";
             streamAuthorEmail = "";
             streamAuthorContact = "";
             streamAuthorImage = "";
-        }
+//        }
 
         name = authorDialog.findViewById(R.id.contact_name);
         email = authorDialog.findViewById(R.id.contact_email);
@@ -339,22 +315,22 @@ public class EventsAdapter extends CursorAdapter implements Urls {
 
         authorDialog.show();
 
-        image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
-                            DbContract.Events.COLUMN_AUTHOR)));
-                    fireImageActivityIntent(context,
-                            authorJson.getString(Constants.JSON_KEY_AUTHOR_IMAGE_URL),
-                            authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME),
-                            authorJson.getString(Constants.JSON_KEY_AUTHOR_EMAIL),
-                            authorJson.getString(Constants.JSON_KEY_AUTHOR_CONTACT));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        image.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                try {
+//                    JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
+//                            DbContract.Events.COLUMN_AUTHOR)));
+//                    fireImageActivityIntent(context,
+//                            authorJson.getString(Constants.JSON_KEY_AUTHOR_IMAGE_URL),
+//                            authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME),
+//                            authorJson.getString(Constants.JSON_KEY_AUTHOR_EMAIL),
+//                            authorJson.getString(Constants.JSON_KEY_AUTHOR_CONTACT));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
     }
 
     /**
@@ -494,23 +470,20 @@ public class EventsAdapter extends CursorAdapter implements Urls {
         int eventCreation;
 
         eventTitle = cursor.getString(cursor.getColumnIndex(DbContract.Events.COLUMN_TITLE));
-        eventSubtitle = cursor.getString(cursor.getColumnIndex(DbContract.Events.COLUMN_SUBTITLE));
         eventDescription = cursor.getString(cursor.getColumnIndex(
                 DbContract.Events.COLUMN_DESCRIPTION));
         eventImage = cursor.getString(cursor.getColumnIndex(DbContract.Events.COLUMN_IMAGE));
-        eventDate = cursor.getInt(cursor.getColumnIndex(DbContract.Events.COLUMN_TIME));
-        eventCreation = cursor.getInt(cursor.getColumnIndex(DbContract.Events.COLUMN_CREATED_AT));
 
-        try {
-            JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
-                    DbContract.Events.COLUMN_AUTHOR)));
-            eventAuthorName = authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME);
-            eventAuthorImage = authorJson.getString(Constants.JSON_KEY_AUTHOR_IMAGE_URL);
-        } catch (JSONException e) {
-            e.printStackTrace();
+//        try {
+//            JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
+//                    DbContract.Events.COLUMN_AUTHOR)));
+//            eventAuthorName = authorJson.getString(Constants.JSON_KEY_AUTHOR_NAME);
+//            eventAuthorImage = authorJson.getString(Constants.JSON_KEY_AUTHOR_IMAGE_URL);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
             eventAuthorName = "";
             eventAuthorImage = "";
-        }
+//        }
 
         try {
             JSONObject streamJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
@@ -541,9 +514,9 @@ public class EventsAdapter extends CursorAdapter implements Urls {
         }
 
         plugDataToView(title, subtitle, description, authorName, stream, tag1, dateTime,
-                creationTime, venue, eventImageView, authorImage, eventTitle, eventSubtitle,
-                eventDescription, eventAuthorName, eventStreamTitle, eventTag, eventDate,
-                eventCreation, eventLocationName, eventAuthorImage, eventImage);
+                creationTime, venue, eventImageView, authorImage, eventTitle, "",
+                eventDescription, eventAuthorName, eventStreamTitle, eventTag, Integer.getInteger(System.currentTimeMillis()/1000 + ""),
+                Integer.getInteger(System.currentTimeMillis()/1000 + ""), eventLocationName, eventAuthorImage, eventImage);
     }
 
     /**
