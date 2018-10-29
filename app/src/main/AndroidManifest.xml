@@ -154,6 +154,9 @@
         <activity android:name=".activities.CreateEventNotif" />
         <activity android:name=".activities.StreamSubscribeActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="a9c5299942df91db33c0892643a657e734977c58" />
     </application>
 
 </manifest>
