@@ -345,7 +345,7 @@ public class EventsAdapter extends CursorAdapter implements Urls {
     private void setImageOnView(final Context context, final String imageUrl,
                                 final ImageView imageView, final int placeholderResourceId) {
         Picasso.with(context)
-                .load(Uri.parse(Utils.getUsableDropboxUrl(imageUrl)))
+                .load(imageUrl)
                 .placeholder(placeholderResourceId)
                 .error(placeholderResourceId)
                 .into(imageView);
@@ -557,7 +557,7 @@ public class EventsAdapter extends CursorAdapter implements Urls {
         sdf.setTimeZone(TimeZone.getTimeZone(TimeUtils.TIME_ZONE_INDIA));
 
         venue.setText(eventLocationName);
-        setImageOnView(context, eventAuthorImage, authorImage, R.drawable.ic_person_black_24dp);
+//        setImageOnView(context, eventAuthorImage, authorImage, R.drawable.ic_person_black_24dp);
 
         if (eventImage.contentEquals("")) {
             eventImageView.setVisibility(View.GONE);
