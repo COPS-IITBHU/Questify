@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -95,8 +96,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
             String description;
             String eventImageUrl;
             String title;
-            String subtitle;
-            String stream;
+            String stream = "";
             String authorName;
             String authorEmail;
             String authorImageUrl;
@@ -108,25 +108,16 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
             eventImageUrl = cursor.getString(cursor.getColumnIndex(DbContract.Events.COLUMN_IMAGE));
 
             try {
-                JSONObject streamJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
+                JSONArray streamJson = new JSONArray(cursor.getString(cursor.getColumnIndex(
                         DbContract.Events.COLUMN_STREAM)));
-                stream = streamJson.getString(Constants.JSON_KEY_STREAM_TITLE);
+                for(int i=0;i<streamJson.length();++i)
+                    stream = stream.concat(streamJson.getString(i) +",  ");
             } catch (JSONException e) {
                 e.printStackTrace();
                 stream = "";
             }
 
-            try {
-                JSONObject venueJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
-                        DbContract.Events.COLUMN_VENUE)));
-                locationName = venueJson.getString(Constants.JSON_KEY_LOCATION_NAME);
-                locationAddress = venueJson.getString(Constants.JSON_KEY_LOCATION_ADDRESS);
-                locationDescription = venueJson.getString(Constants.JSON_KEY_LOCATION_DESCRIPTION);
-                lat = venueJson.getDouble(Constants.JSON_KEY_LOCATION_LATITUDE);
-                lng = venueJson.getDouble(Constants.JSON_KEY_LOCATION_LONGITUDE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            locationName = cursor.getString(cursor.getColumnIndex(DbContract.Events.COLUMN_VENUE));
 
 //            try {
 //                JSONObject authorJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
@@ -143,7 +134,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
                 authorContact = "";
 //            }
 
-            plugDataOnViews(title, "", stream, description, eventImageUrl, Integer.getInteger(System.currentTimeMillis()/1000+""),
+            plugDataOnViews(title, "", stream, description, eventImageUrl,
                     authorName, authorEmail, authorImageUrl, authorContact, lat, lng, locationName,
                     locationAddress, locationDescription);
         }
@@ -152,13 +143,13 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
 
     private void plugDataOnViews(final String title, final String subtitle, final String stream,
                                  final String description, final String eventImageUrl,
-                                 final int dateTime, final String authorName,
+                                 final String authorName,
                                  final String authorEmail, final String authorImageUrl,
                                  final String authorContact, final double lat, final double lng,
                                  final String locationName, final String locationAddress,
                                  final String locationDescription) {
         setEventHeaderView(title, subtitle, stream, description, eventImageUrl);
-        setEventTimeView(dateTime, title, subtitle, stream, locationName);
+        setEventTimeView(title, subtitle, stream, locationName);
         setLocationView(locationName, locationAddress, locationDescription, lat, lng);
         setAuthorView(authorName, authorEmail, authorContact, authorImageUrl);
     }
@@ -194,19 +185,12 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
         fragmentTransaction.commit();
     }
 
-    private void setEventTimeView(final int dateTime, final String title, final String subtitle,
+    private void setEventTimeView(final String title, final String subtitle,
                                   final String stream, final String locationName) {
-        SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.DB_TIME_FORMAT, Locale.ENGLISH);
-        sdf.setTimeZone(TimeZone.getTimeZone(TimeUtils.TIME_ZONE_INDIA));
-        String date = sdf.format(
-                Utils.settleTimeZoneDifference(dateTime) * TimeUtils.MILLIS_IN_SECOND);
-        datetimeTv.setText(date.replace("am", "AM")
-                .replace("pm", "PM"));
-        agoTv.setText(TimeUtils.ago(dateTime));
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fireCalenderIntent(dateTime, title, subtitle, stream, locationName);
+                fireCalenderIntent(title, subtitle, stream, locationName);
             }
         });
     }
@@ -288,16 +272,11 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
     /**
      * Fires intent for saving event to calendar.
      *
-     * @param datetime datetime
      */
-    private void fireCalenderIntent(final int datetime, final String title, final String subtitle,
+    private void fireCalenderIntent(final String title, final String subtitle,
                                     final String stream, final String locationName) {
         Intent intent = new Intent(Intent.ACTION_EDIT);
         intent.setType("vnd.android.cursor.item/event");
-        intent.putExtra(Constants.INTENT_EXTRA_KEY_CALENDAR_BEGIN_TIME,
-                datetime * TimeUtils.MILLIS_IN_SECOND);
-        intent.putExtra(Constants.INTENT_EXTRA_KEY_CALENDAR_END_TIME,
-                datetime * TimeUtils.MILLIS_IN_SECOND);
         intent.putExtra(Constants.INTENT_EXTRA_KEY_CALENDAR_ALL_DAY, false);
         intent.putExtra(Constants.INTENT_EXTRA_KEY_CALENDAR_TITLE, title);
         intent.putExtra(Constants.INTENT_EXTRA_KEY_CALENDAR_DESCRIPTION,

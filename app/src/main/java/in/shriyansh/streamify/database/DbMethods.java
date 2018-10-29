@@ -72,29 +72,19 @@ public class DbMethods {
             try {
                 JSONObject eventJson = eventsJsonArray.getJSONObject(i);
 
-                Cursor cursor = queryNotifications(null, null,null,
-                        DbContract.Events.COLUMN_GLOBAL_ID + " DESC",1);
+                //insert and count to notify
+                ContentValues values = new ContentValues();
+                values.put(DbContract.Events.COLUMN_GLOBAL_ID,eventJson.getInt("id"));
+                values.put(DbContract.Events.COLUMN_TITLE,eventJson.getString("title"));
+                values.put(DbContract.Events.COLUMN_DESCRIPTION,eventJson.getString(
+                        "description"));
+                values.put(DbContract.Events.COLUMN_IMAGE,eventJson.getString("imageurl"));
+                values.put(DbContract.Events.COLUMN_STREAM,eventJson.getJSONArray("streams").toString());
+                values.put(DbContract.Events.COLUMN_TAGS,eventJson.getJSONArray("tags").toString());
+                values.put(DbContract.Events.COLUMN_VENUE,eventJson.getString("location"));
 
-                if (cursor.getCount() == 0) {
-                    //insert and count to notify
-                    ContentValues values = new ContentValues();
-                    values.put(DbContract.Events.COLUMN_GLOBAL_ID,eventJson.getInt("id"));
-                    values.put(DbContract.Events.COLUMN_TITLE,eventJson.getString("title"));
-                    values.put(DbContract.Events.COLUMN_DESCRIPTION,eventJson.getString(
-                            "description"));
-                    values.put(DbContract.Events.COLUMN_IMAGE,eventJson.getString("imageurl"));
-
-                    // Just 1st stream for now
-                    values.put(DbContract.Events.COLUMN_STREAM,eventJson.getJSONArray("stream").getString(0));
-
-                    // Just fill the first tag for now
-                    values.put(DbContract.Events.COLUMN_TAGS,eventJson.getJSONArray("tag").getString(0));
-                    values.put(DbContract.Events.COLUMN_VENUE,eventJson.getString("location"));
-
-                    insertCount++;
-                    db.insert(DbContract.Events.TABLE_EVENTS,null,values);
-                }
-                cursor.close();
+                insertCount++;
+                db.insert(DbContract.Events.TABLE_EVENTS,null,values);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -249,7 +239,7 @@ public class DbMethods {
      */
     public long queryLastEventId() {
         Cursor cursor = queryEvents(null, DbContract.Events.COLUMN_GLOBAL_ID
-                + " <> ? ", new String[]{Constants.INSTRUCTIONS_RECORD_ID + ""},
+                        + " <> ? ", new String[]{Constants.INSTRUCTIONS_RECORD_ID + ""},
                 DbContract.Events.COLUMN_GLOBAL_ID + " DESC ", 1);
         long globalId = -1;
         if (cursor != null) {
