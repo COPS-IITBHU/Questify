@@ -38,26 +38,20 @@ public class DbMethods {
             try {
                 JSONObject notificationJson = notificationsJsonArray.getJSONObject(i);
 
-                Cursor cursor = queryNotifications(null, null,null,
-                        DbContract.Notifications.COLUMN_GLOBAL_ID + " DESC",1);
-                if (cursor.getCount() == 0) {
-                    //insert and count to notify
-                    ContentValues values = new ContentValues();
-                    values.put(DbContract.Notifications.COLUMN_GLOBAL_ID,
-                            notificationJson.getInt("id"));
-                    values.put(DbContract.Notifications.COLUMN_TITLE,
-                            notificationJson.getString("title"));
-                    values.put(DbContract.Notifications.COLUMN_DESCRIPTION,
-                            notificationJson.getString("description"));
-                    values.put(DbContract.Notifications.COLUMN_AUTHOR,
-                            notificationJson.getString("authoremail"));
+                //insert and count to notify
+                ContentValues values = new ContentValues();
+                values.put(DbContract.Notifications.COLUMN_GLOBAL_ID,
+                        notificationJson.getInt("id"));
+                values.put(DbContract.Notifications.COLUMN_TITLE,
+                        notificationJson.getString("title"));
+                values.put(DbContract.Notifications.COLUMN_DESCRIPTION,
+                        notificationJson.getString("description"));
+                values.put(DbContract.Notifications.COLUMN_AUTHOR,
+                        notificationJson.getString("authoremail"));
 
-                    insertCount++;
-                    db.insert(DbContract.Notifications.TABLE_NOTIFICATIONS,
-                            null,values);
-                }
-
-                cursor.close();
+                insertCount++;
+                db.insert(DbContract.Notifications.TABLE_NOTIFICATIONS,
+                        null,values);
 
             } catch (JSONException e) {
                 e.printStackTrace();
