@@ -42,14 +42,14 @@ public class ChooseEvent extends AppCompatActivity {
     private String[] events;
     private RadioButton[] event;
     private Button btn_reg_event;
-    private LinearLayout progress_layout;
+//    private LinearLayout progress_layout;
 
     private String[] available_events;
     private String[] corresponding_event_ids;
 
     private RequestQueue volleyQueue;
 
-    private final String TAG = "ChooseEventActivity";
+    private static final String TAG = "ChooseEventActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class ChooseEvent extends AppCompatActivity {
 //        progress_layout = findViewById(R.id.layout_progress_choose_event);
 
         events_radio.setVisibility(View.GONE);
-        progress_layout.setVisibility(View.VISIBLE);
+//        progress_layout.setVisibility(View.VISIBLE);
 
         getEvents(new VolleyCallback() {
             @Override
@@ -102,7 +102,7 @@ public class ChooseEvent extends AppCompatActivity {
         });
 
         events_radio.setVisibility(View.VISIBLE);
-        progress_layout.setVisibility(View.GONE);
+//        progress_layout.setVisibility(View.GONE);
 
     }
 
@@ -113,7 +113,7 @@ public class ChooseEvent extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String event_id = corresp_event_ids[events_radiogrp.getCheckedRadioButtonId()];
-                PreferenceUtils.setStringPreference(ChooseEvent.this, PreferenceUtils.PREF_USER_EVENT, event_id);
+                PreferenceUtils.setIntegerPreference(ChooseEvent.this, PreferenceUtils.PREF_USER_EVENT, Integer.valueOf(event_id));
                 Log.e(TAG, event_id);
 
                 Intent intent = new Intent(ChooseEvent.this, ChooseNumberMembers.class);
@@ -140,6 +140,7 @@ public class ChooseEvent extends AppCompatActivity {
                     if (status.equals(Constants.RESPONSE_STATUS_VALUE_200)) {
 
                         JSONArray jsonArray = resp.getJSONArray("response");
+                        Log.e(TAG, resp.toString());
 
                         callback.onSuccess(jsonArray);
 
