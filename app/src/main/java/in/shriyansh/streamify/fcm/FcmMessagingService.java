@@ -151,9 +151,7 @@ public class FcmMessagingService extends FirebaseMessagingService implements Url
                     sendNotification(data,getApplicationContext());
                     broadcast(getApplicationContext(),"notification_received");
                 }
-            }
-
-            if (jsonData.getInt("type") == FCM_TYPE_EVENT) {
+            }else if (jsonData.getInt("type") == FCM_TYPE_EVENT) {
                 JSONArray eventJsonArray = new JSONArray();
                 eventJsonArray.put(jsonData.getJSONObject("event"));
                 long count = dbMethods.insertEvents(eventJsonArray);
@@ -186,36 +184,22 @@ public class FcmMessagingService extends FirebaseMessagingService implements Url
             String title;
             String subtitle;
             String description;
-            String streamUrl;
             int smallIcon = R.drawable.newspaper48;
             JSONObject data = new JSONObject(messageBody);
             if (data.getInt("type") == FCM_TYPE_NOTIFICATION) {
                 intent.putExtra(EXTRA_NOTIFICATION_TYPE_KEY,NOTIFICATION_TYPE_NEWS);
                 JSONObject notification = data.getJSONObject("notification");
                 title = notification.getString("title");
-                subtitle = notification.getString("stream");
-
-                // TODO Stub image for now
-                streamUrl = "https://www.pexels.com/photo/face-facial-hair-fine-looking-guy-614810/";
-//                streamUrl = Utils.getUsableDropboxUrl(event.getJSONObject("author")
-//                        .getString("image"));
-
-                description = notification.getString("description");
+                subtitle = "";
+                description = notification.getString("content");
             } else if (data.getInt("type") == FCM_TYPE_EVENT) {
                 intent.putExtra(EXTRA_NOTIFICATION_TYPE_KEY,NOTIFICATION_TYPE_EVENT);
                 JSONObject event = data.getJSONObject("event");
                 title = event.getString("title");
                 subtitle = event.getString("location");
                 description = event.getString("description");
-
-                // TODO Stub image for now
-                streamUrl = "https://www.pexels.com/photo/face-facial-hair-fine-looking-guy-614810/";
-//                streamUrl = Utils.getUsableDropboxUrl(event.getJSONObject("author")
-//                        .getString("image"));
-
-            } else {
+            } else
                 return;
-            }
 
 
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0
@@ -223,43 +207,23 @@ public class FcmMessagingService extends FirebaseMessagingService implements Url
                     PendingIntent.FLAG_ONE_SHOT);
 
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            NotificationCompat.Builder notificationBuilder;
-            try {
-                notificationBuilder = new NotificationCompat.Builder(this)
-                        .setSmallIcon(smallIcon)
-                        .setContentTitle(title)
-                        .setContentText(subtitle)
-                        .setTicker(title + " : " + subtitle)
-                        .setColor(getResources().getColor(R.color.ColorPrimary))
-                        .setLargeIcon(Picasso.with(context).load(streamUrl).get())
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(description))
-                        .setContentIntent(pendingIntent);
-            } catch (IOException | IllegalArgumentException e) {
-                e.printStackTrace();
-                notificationBuilder = new NotificationCompat.Builder(this)
-                        .setSmallIcon(smallIcon)
-                        .setContentTitle(title)
-                        .setContentText(subtitle)
-                        .setTicker(title + " : " + subtitle)
-                        .setColor(getResources().getColor(R.color.ColorPrimary))
-                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.ic_ic_logo))
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(description))
-                        .setContentIntent(pendingIntent);
-
-            }
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(smallIcon)
+                    .setContentTitle(title)
+                    .setContentText(subtitle)
+                    .setTicker(title + " : " + subtitle)
+                    .setColor(getResources().getColor(R.color.ColorPrimary))
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    .setStyle(new NotificationCompat.BigTextStyle()
+                            .bigText(description))
+                    .setContentIntent(pendingIntent);
 
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -3,7 +3,9 @@ package in.shriyansh.streamify.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import in.shriyansh.streamify.utils.Constants;
 import in.shriyansh.streamify.utils.TimeUtils;
@@ -40,14 +42,16 @@ public class DbMethods {
 
                 //insert and count to notify
                 ContentValues values = new ContentValues();
+                long numRows = DatabaseUtils.queryNumEntries(db, DbContract.Notifications.TABLE_NOTIFICATIONS);
                 values.put(DbContract.Notifications.COLUMN_GLOBAL_ID,
-                        notificationJson.getInt("id"));
+                        numRows+1);
+                Log.d(TAG,"Inserting notif with id="+numRows+1);
                 values.put(DbContract.Notifications.COLUMN_TITLE,
                         notificationJson.getString("title"));
                 values.put(DbContract.Notifications.COLUMN_DESCRIPTION,
-                        notificationJson.getString("description"));
+                        notificationJson.getString("content"));
                 values.put(DbContract.Notifications.COLUMN_AUTHOR,
-                        notificationJson.getString("authoremail"));
+                        notificationJson.getString("author"));
 
                 insertCount++;
                 db.insert(DbContract.Notifications.TABLE_NOTIFICATIONS,
@@ -74,11 +78,13 @@ public class DbMethods {
 
                 //insert and count to notify
                 ContentValues values = new ContentValues();
-                values.put(DbContract.Events.COLUMN_GLOBAL_ID,eventJson.getInt("id"));
+                long numRows = DatabaseUtils.queryNumEntries(db,DbContract.Events.TABLE_EVENTS);
+                values.put(DbContract.Notifications.COLUMN_GLOBAL_ID,
+                        numRows+1);
+                Log.d(TAG,"Inserting event with id="+numRows+1);
                 values.put(DbContract.Events.COLUMN_TITLE,eventJson.getString("title"));
-                values.put(DbContract.Events.COLUMN_DESCRIPTION,eventJson.getString(
-                        "description"));
-                values.put(DbContract.Events.COLUMN_IMAGE,eventJson.getString("imageurl"));
+                values.put(DbContract.Events.COLUMN_DESCRIPTION,eventJson.getString("description"));
+                values.put(DbContract.Events.COLUMN_IMAGE,eventJson.getString("imageURL"));
                 values.put(DbContract.Events.COLUMN_STREAM,eventJson.getJSONArray("streams").toString());
                 values.put(DbContract.Events.COLUMN_TAGS,eventJson.getJSONArray("tags").toString());
                 values.put(DbContract.Events.COLUMN_VENUE,eventJson.getString("location"));
