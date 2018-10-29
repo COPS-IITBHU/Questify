@@ -1,6 +1,7 @@
 package in.shriyansh.streamify.activities;
 
 import android.content.Intent;
+import android.icu.text.UnicodeSetSpanner;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -8,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.BoringLayout;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -76,6 +78,8 @@ public class RegisterTeam extends AppCompatActivity {
     private int index = 0;
     private int event_id;
     private CoordinatorLayout coordinatorLayout;
+
+    private Boolean isAllRight = Boolean.FALSE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,11 +156,14 @@ public class RegisterTeam extends AppCompatActivity {
         if (proceed && proceed2) {
             focusView.requestFocus();
         } else {
+
             sendTeamDetails(mem_num, event_id);
 
-            Intent intent = new Intent(RegisterTeam.this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            if (isAllRight) {
+                Intent intent = new Intent(RegisterTeam.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
         }
 
     }
@@ -222,12 +229,29 @@ public class RegisterTeam extends AppCompatActivity {
 
     private void sendTeamDetails(int mem_num, int event_id) {
 
-        sendLeaderDetails(event_id);
-        addTeamMembers(mem_num);
+        sendLeaderDetails(event_id, new VolleyCallback() {
+            @Override
+            public void onSuccess(boolean toProceed) {
+                isAllRight = toProceed;
+            }
+        });
+
+        Log.e(TAG, "boolean gadbad" + isAllRight.toString());
+        if (isAllRight) {
+            addTeamMembers(mem_num, new VolleyCallback() {
+                @Override
+                public void onSuccess(boolean toProceed) {
+                    isAllRight = toProceed;
+                }
+            });
+        }
+        else {
+            showSnackBar("Something went wrong, Try Again");
+        }
 
     }
 
-    private void sendLeaderDetails(final int event_id) {
+    private void sendLeaderDetails(final int event_id, final VolleyCallback callback) {
 
         team_name = findViewById(R.id.team_name);
 
@@ -239,8 +263,10 @@ public class RegisterTeam extends AppCompatActivity {
         params.put("name", teamname);
         params.put("eventId", Integer.toString(event_id));
         Log.e(TAG, params.toString());
+        PreferenceUtils.setStringPreference(RegisterTeam.this, PreferenceUtils.PREF_TEAM_ID, teamname+Integer.toString(event_id));
 
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST,
+
+        JsonObjectRequest stringRequestforleader = new JsonObjectRequest(Request.Method.POST,
                 CREATE_TEAM, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -249,10 +275,24 @@ public class RegisterTeam extends AppCompatActivity {
 
                     if (status.equals("200")) {
                         PreferenceUtils.setStringPreference(RegisterTeam.this, PreferenceUtils.PREF_TEAM_ID, teamname+Integer.toString(event_id));
-                        Log.e(TAG, status);
+                        Log.e(TAG, response.toString());
+
+                        Boolean toProceed = Boolean.TRUE;
+
+                        callback.onSuccess(toProceed);
+
+                        Log.e(TAG, "sendleader200" + isAllRight.toString());
                     }
                     else if (status.equals("500")) {
-                        showSnackBar("Some error occured... Maybe try a different team name!", "RETRY", CASE_DUPLICATE_TEAM_NAME);
+
+                        Boolean toProceed = Boolean.FALSE;
+
+                        callback.onSuccess(toProceed);
+                        showSnackBar("Some error occured... Maybe try a different team name!");
+                    }
+                    else {
+                        Boolean toProceed = Boolean.FALSE;
+                        callback.onSuccess(toProceed);
                     }
 
                 } catch (JSONException e) {
@@ -264,6 +304,7 @@ public class RegisterTeam extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                isAllRight = Boolean.FALSE;
                 VolleyLog.e(TAG, "Error: " + error.toString());
                 Toast.makeText(RegisterTeam.this, "OOPS something went wrong here too!!", Toast.LENGTH_LONG).show();
             }
@@ -277,11 +318,19 @@ public class RegisterTeam extends AppCompatActivity {
             }
         };
 
-        volleyQueue.add(stringRequest);
+        Log.e(TAG, "outvolleyleader" + isAllRight.toString());
+
+        stringRequestforleader.setRetryPolicy(new DefaultRetryPolicy(
+                Constants.HTTP_INITIAL_TIME_OUT,
+                Constants.HTTP_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+
+        volleyQueue.add(stringRequestforleader);
 
     }
 
-    private void addTeamMembers(int mem_num) {
+    private void addTeamMembers(int mem_num, final VolleyCallback callback) {
 
         for (int i=1; i<mem_num; i++) {
 
@@ -316,9 +365,22 @@ public class RegisterTeam extends AppCompatActivity {
                 @Override
                 public void onResponse(JSONObject response) {
                     try {
+
+                        Boolean toProceed = Boolean.FALSE;
+
                         String status = response.getString("status");
                         Toast.makeText(RegisterTeam.this, "Team Registered!!", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, status);
+
+                        if (status.equals("200")) {
+                            toProceed = Boolean.TRUE;
+                            callback.onSuccess(toProceed);
+                        }
+                        else {
+                            toProceed = Boolean.FALSE;
+                            callback.onSuccess(toProceed);
+                        }
+
+                        Log.e(TAG, "juuliiiaaaa" + response.toString());
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -352,19 +414,15 @@ public class RegisterTeam extends AppCompatActivity {
 
     }
 
-    private void showSnackBar(String msg, String action, final int caseId) {
+    private void showSnackBar(String msg) {
         Snackbar snackbar = Snackbar
-                .make(coordinatorLayout, msg, Snackbar.LENGTH_LONG)
-                .setAction(action, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (caseId == CASE_DUPLICATE_TEAM_NAME) {
-                            sendLeaderDetails(event_id);
-                        }
-                    }
-                });
+                .make(coordinatorLayout, msg, Snackbar.LENGTH_LONG);
         snackbar.setActionTextColor(getResources().getColor(R.color.pink500));
         snackbar.show();
+    }
+
+    private interface VolleyCallback {
+        void onSuccess(boolean toProceed);
     }
 
 }

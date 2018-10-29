@@ -49,7 +49,7 @@ public class ChooseEvent extends AppCompatActivity {
 
     private RequestQueue volleyQueue;
 
-    private final String TAG = "ChooseEventActivity";
+    private static final String TAG = "ChooseEventActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +140,7 @@ public class ChooseEvent extends AppCompatActivity {
                     if (status.equals(Constants.RESPONSE_STATUS_VALUE_200)) {
 
                         JSONArray jsonArray = resp.getJSONArray("response");
+                        Log.e(TAG, resp.toString());
 
                         callback.onSuccess(jsonArray);
 
