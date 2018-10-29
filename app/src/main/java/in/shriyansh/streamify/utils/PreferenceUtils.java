@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by shriyanshgautam on 25/08/17.
  */
@@ -27,6 +30,18 @@ public class PreferenceUtils {
     public static final String PREF_USER_EVENT = "pref_user_event";
     public static final String PREF_MEM_NUM = "pref_mem_num";
     public static final String PREF_TEAM_ID = "pref_team_id";
+
+
+    public static Map<String, String> PREF_STREAMS = new HashMap<String, String>();
+    static {
+        PREF_STREAMS.put("AERO", "pref_stream_aero");
+        PREF_STREAMS.put("ASTRO", "pref_stream_astro");
+        PREF_STREAMS.put("BIZ", "pref_stream_biz");
+        PREF_STREAMS.put("COPS", "pref_stream_cops");
+        PREF_STREAMS.put("CSI", "pref_stream_csi");
+        PREF_STREAMS.put("ROBO", "pref_stream_robo");
+        PREF_STREAMS.put("SAE", "pref_stream_sae");
+    }
 
     /**
      * Sets string preference.
