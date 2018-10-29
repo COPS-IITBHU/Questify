@@ -2,6 +2,7 @@ package in.shriyansh.streamify.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -43,6 +44,7 @@ import static in.shriyansh.streamify.network.Urls.CREATE_TEAM;
 
 public class RegisterTeam extends AppCompatActivity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
+    private static final int CASE_DUPLICATE_TEAM_NAME = 100;
 
     private Button btn_register_team;
     private LinearLayout mem2_container;
@@ -64,11 +66,16 @@ public class RegisterTeam extends AppCompatActivity {
     private EditText team_name;
     private EditText leader_roll;
     private EditText team_member_roll;
+    private EditText leader_email;
+
+    private String leader_roll_no;
+    private String team_id;
 
     private RequestQueue volleyQueue;
 
     private int index = 0;
     private int event_id;
+    private CoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +93,10 @@ public class RegisterTeam extends AppCompatActivity {
 
         leader_roll = findViewById(R.id.leader_roll);
         team_name = findViewById(R.id.team_name);
+        leader_email = findViewById(R.id.leader_email);
+        coordinatorLayout = findViewById(R.id.team_reg_coordinator);
+
+        leader_roll_no = leader_roll.getText().toString();
 
 
         mem2name = findViewById(R.id.mem2name);
@@ -212,22 +223,21 @@ public class RegisterTeam extends AppCompatActivity {
     private void sendTeamDetails(int mem_num, int event_id) {
 
         sendLeaderDetails(event_id);
-        addTeamMembers(mem_num, PreferenceUtils.getIntegerPreference(RegisterTeam.this, PreferenceUtils.PREF_TEAM_ID));
+        addTeamMembers(mem_num);
 
     }
 
-    private void sendLeaderDetails(int event_id) {
+    private void sendLeaderDetails(final int event_id) {
 
-        leader_roll = findViewById(R.id.leader_roll);
         team_name = findViewById(R.id.team_name);
 
-        String rollNo = leader_roll.getText().toString();
-        String teamname = team_name.getText().toString();
+        final String teamname = team_name.getText().toString();
+        String leader_mail = leader_email.getText().toString();
 
         Map<String, String> params = new HashMap<>();
-        params.put("rollNo", rollNo);
-        params.put("team_name", teamname);
-        params.put("event_id", Integer.toString(event_id));
+        params.put("email", leader_mail);
+        params.put("name", teamname);
+        params.put("eventId", Integer.toString(event_id));
         Log.e(TAG, params.toString());
 
         JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST,
@@ -236,12 +246,13 @@ public class RegisterTeam extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 try {
                     String status = response.getString("status");
-                    Log.e(TAG, status);
-                    int team_id = response.getInt("team_id");
 
                     if (status.equals("200")) {
-                        PreferenceUtils.setIntegerPreference(RegisterTeam.this, PreferenceUtils.PREF_TEAM_ID, team_id);
-                        Toast.makeText(RegisterTeam.this, "YAY!!!!", Toast.LENGTH_LONG).show();
+                        PreferenceUtils.setStringPreference(RegisterTeam.this, PreferenceUtils.PREF_TEAM_ID, teamname+Integer.toString(event_id));
+                        Log.e(TAG, status);
+                    }
+                    else if (status.equals("500")) {
+                        showSnackBar("Some error occured... Maybe try a different team name!", "RETRY", CASE_DUPLICATE_TEAM_NAME);
                     }
 
                 } catch (JSONException e) {
@@ -266,9 +277,11 @@ public class RegisterTeam extends AppCompatActivity {
             }
         };
 
+        volleyQueue.add(stringRequest);
+
     }
 
-    private void addTeamMembers(int mem_num, int team_id) {
+    private void addTeamMembers(int mem_num) {
 
         for (int i=1; i<mem_num; i++) {
 
@@ -288,11 +301,14 @@ public class RegisterTeam extends AppCompatActivity {
                 team_member_roll = findViewById(R.id.mem5roll);
             }
 
+            String leader_roll_no = leader_roll.getText().toString();
             String rollNo = team_member_roll.getText().toString();
+            String team_id = PreferenceUtils.getStringPreference(RegisterTeam.this, PreferenceUtils.PREF_TEAM_ID);
 
             Map<String, String> params = new HashMap<>();
-            params.put("rollNo", rollNo);
-            params.put("team_id", Integer.toString(team_id));
+            params.put("sender", leader_roll_no);
+            params.put("newMem", rollNo);
+            params.put("teamId", team_id);
             Log.e(TAG, params.toString());
 
             JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST,
@@ -301,6 +317,7 @@ public class RegisterTeam extends AppCompatActivity {
                 public void onResponse(JSONObject response) {
                     try {
                         String status = response.getString("status");
+                        Toast.makeText(RegisterTeam.this, "Team Registered!!", Toast.LENGTH_SHORT).show();
                         Log.e(TAG, status);
 
                     } catch (JSONException e) {
@@ -334,4 +351,20 @@ public class RegisterTeam extends AppCompatActivity {
         }
 
     }
+
+    private void showSnackBar(String msg, String action, final int caseId) {
+        Snackbar snackbar = Snackbar
+                .make(coordinatorLayout, msg, Snackbar.LENGTH_LONG)
+                .setAction(action, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (caseId == CASE_DUPLICATE_TEAM_NAME) {
+                            sendLeaderDetails(event_id);
+                        }
+                    }
+                });
+        snackbar.setActionTextColor(getResources().getColor(R.color.pink500));
+        snackbar.show();
+    }
+
 }
