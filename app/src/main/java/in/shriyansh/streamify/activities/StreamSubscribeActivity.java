@@ -42,7 +42,7 @@ public class StreamSubscribeActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)
-        allStreams = new String[]{"Aero", "Astro", "Biz", "COPS", "CSI", "Robo", "SAE"};
+        allStreams = new String[]{"AERO", "ASTRO", "BIZ", "COPS", "CSI", "ROBO", "SAE"};
         RecyclerView.Adapter mAdapter = new MyAdapter();
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
@@ -87,15 +87,20 @@ public class StreamSubscribeActivity extends AppCompatActivity {
 
             final String stream = allStreams[position];
             holder.mTextView.setText(stream);
-            boolean alreadyChecked = PreferenceUtils.getBooleanPreference(
+            final boolean alreadyChecked = PreferenceUtils.getBooleanPreference(
                     StreamSubscribeActivity.this, PreferenceUtils.PREF_STREAMS.get(stream));
             holder.mSwitch.setChecked(alreadyChecked);
 
             holder.mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    PreferenceUtils.setBooleanPreference(
-                    StreamSubscribeActivity.this, PreferenceUtils.PREF_STREAMS.get(stream), isChecked);
+                    if (isChecked && !alreadyChecked)
+                        PreferenceUtils.setBooleanPreference(
+                        StreamSubscribeActivity.this, PreferenceUtils.PREF_STREAMS.get(stream), true);
+                    else if (!isChecked && alreadyChecked)
+                        PreferenceUtils.setBooleanPreference(
+                                StreamSubscribeActivity.this, PreferenceUtils.PREF_STREAMS.get(stream), false);
+
                 }
             });
         }

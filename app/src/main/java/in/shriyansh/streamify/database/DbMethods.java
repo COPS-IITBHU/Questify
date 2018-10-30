@@ -49,9 +49,9 @@ public class DbMethods {
                 values.put(DbContract.Notifications.COLUMN_TITLE,
                         notificationJson.getString("title"));
                 values.put(DbContract.Notifications.COLUMN_DESCRIPTION,
-                        notificationJson.getString("content"));
+                        notificationJson.getString("description"));
                 values.put(DbContract.Notifications.COLUMN_AUTHOR,
-                        notificationJson.getString("author"));
+                        notificationJson.getString("authoremail"));
 
                 insertCount++;
                 db.insert(DbContract.Notifications.TABLE_NOTIFICATIONS,
@@ -84,7 +84,7 @@ public class DbMethods {
                 Log.d(TAG,"Inserting event with id="+numRows+1);
                 values.put(DbContract.Events.COLUMN_TITLE,eventJson.getString("title"));
                 values.put(DbContract.Events.COLUMN_DESCRIPTION,eventJson.getString("description"));
-                values.put(DbContract.Events.COLUMN_IMAGE,eventJson.getString("imageURL"));
+                values.put(DbContract.Events.COLUMN_IMAGE,eventJson.getString("imageurl"));
                 values.put(DbContract.Events.COLUMN_STREAM,eventJson.getJSONArray("streams").toString());
                 values.put(DbContract.Events.COLUMN_TAGS,eventJson.getJSONArray("tags").toString());
                 values.put(DbContract.Events.COLUMN_VENUE,eventJson.getString("location"));
