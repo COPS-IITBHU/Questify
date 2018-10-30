@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -344,7 +345,7 @@ public class EventsAdapter extends CursorAdapter implements Urls {
     private void setImageOnView(final Context context, final String imageUrl,
                                 final ImageView imageView, final int placeholderResourceId) {
         Picasso.with(context)
-                .load(Uri.parse(Utils.getUsableDropboxUrl(imageUrl)))
+                .load(imageUrl)
                 .placeholder(placeholderResourceId)
                 .error(placeholderResourceId)
                 .into(imageView);
@@ -458,16 +459,13 @@ public class EventsAdapter extends CursorAdapter implements Urls {
                                  final TextView venue, final ImageView eventImageView,
                                  final ImageView authorImage) {
         String eventTitle;
-        String eventSubtitle;
         String eventDescription;
         String eventImage;
         String eventAuthorName;
         String eventAuthorImage;
-        String eventStreamTitle;
-        String eventTag;
+        String eventStreamTitle = "";
+        String eventTag = "";
         String eventLocationName;
-        int eventDate;
-        int eventCreation;
 
         eventTitle = cursor.getString(cursor.getColumnIndex(DbContract.Events.COLUMN_TITLE));
         eventDescription = cursor.getString(cursor.getColumnIndex(
@@ -486,37 +484,31 @@ public class EventsAdapter extends CursorAdapter implements Urls {
 //        }
 
         try {
-            JSONObject streamJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
+            JSONArray streamJson = new JSONArray(cursor.getString(cursor.getColumnIndex(
                     DbContract.Events.COLUMN_STREAM)));
-            eventStreamTitle = streamJson.getString("title");
+            for(int i=0;i<streamJson.length();++i)
+                eventStreamTitle = eventStreamTitle.concat(streamJson.getString(i) +",  ");
         } catch (JSONException e) {
             e.printStackTrace();
             eventStreamTitle = "";
         }
 
         try {
-            JSONObject tagJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
+            JSONArray tagJson = new JSONArray(cursor.getString(cursor.getColumnIndex(
                     DbContract.Events.COLUMN_TAGS)));
-            eventTag = tagJson.getString("name") + " ";
+            for(int i=0;i<tagJson.length();++i)
+                eventTag = eventTag.concat(tagJson.getString(i) +",  ");
 
         } catch (JSONException e) {
             e.printStackTrace();
             eventTag = "";
         }
 
-        try {
-            JSONObject venueJson = new JSONObject(cursor.getString(cursor.getColumnIndex(
-                    DbContract.Events.COLUMN_VENUE)));
-            eventLocationName = venueJson.getString(Constants.JSON_KEY_LOCATION_NAME);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            eventLocationName = "";
-        }
+        eventLocationName = cursor.getString(cursor.getColumnIndex(DbContract.Events.COLUMN_VENUE));
 
         plugDataToView(title, subtitle, description, authorName, stream, tag1, dateTime,
                 creationTime, venue, eventImageView, authorImage, eventTitle, "",
-                eventDescription, eventAuthorName, eventStreamTitle, eventTag, Integer.getInteger(System.currentTimeMillis()/1000 + ""),
-                Integer.getInteger(System.currentTimeMillis()/1000 + ""), eventLocationName, eventAuthorImage, eventImage);
+                eventDescription, eventAuthorName, eventStreamTitle, eventTag, eventLocationName, eventAuthorImage, eventImage);
     }
 
     /**
@@ -539,8 +531,6 @@ public class EventsAdapter extends CursorAdapter implements Urls {
      * @param eventAuthorName   Event author name
      * @param eventStreamTitle  Event stream title
      * @param eventTag          Event tags
-     * @param eventDate         Event date
-     * @param creation          Event creation time
      * @param eventLocationName Event location name
      * @param eventAuthorImage  Event author image url
      * @param eventImage        Event image url
@@ -554,7 +544,6 @@ public class EventsAdapter extends CursorAdapter implements Urls {
                                 final String eventTitle, final String eventSubtitle,
                                 final String eventDescription, final String eventAuthorName,
                                 final String eventStreamTitle, final String eventTag,
-                                final int eventDate, final int creation,
                                 final String eventLocationName, final String eventAuthorImage,
                                 final String eventImage) {
         title.setText(eventTitle);
@@ -566,14 +555,9 @@ public class EventsAdapter extends CursorAdapter implements Urls {
 
         SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.DB_TIME_FORMAT, Locale.ENGLISH);
         sdf.setTimeZone(TimeZone.getTimeZone(TimeUtils.TIME_ZONE_INDIA));
-        String date = sdf.format(Utils.settleTimeZoneDifference(eventDate)
-                * TimeUtils.MILLIS_IN_SECOND);
 
-        dateTime.setText(date.replace("am","AM").replace("pm",
-                "PM"));
-        creationTime.setText(TimeUtils.ago(Utils.settleTimeZoneDifference(creation)));
         venue.setText(eventLocationName);
-        setImageOnView(context, eventAuthorImage, authorImage, R.drawable.ic_person_black_24dp);
+//        setImageOnView(context, eventAuthorImage, authorImage, R.drawable.ic_person_black_24dp);
 
         if (eventImage.contentEquals("")) {
             eventImageView.setVisibility(View.GONE);

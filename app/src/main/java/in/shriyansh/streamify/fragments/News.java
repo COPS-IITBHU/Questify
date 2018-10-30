@@ -235,7 +235,7 @@ public class News extends Fragment implements Urls {
                 Log.d(TAG, resp.toString());
                 try {
                     String status = resp.getString(Constants.RESPONSE_STATUS_KEY);
-                    if (status.equals(Constants.RESPONSE_STATUS_VALUE_OK)) {
+                    if (status.equals(Constants.RESPONSE_STATUS_VALUE_200)) {
                         long count = dbMethods.insertNotifications(resp.getJSONArray("response"));
                         notificationsAdapter.changeCursor(dbMethods.queryNotifications(
                                 null, null, null,

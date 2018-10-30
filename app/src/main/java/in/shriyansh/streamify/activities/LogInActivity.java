@@ -266,6 +266,10 @@ public class LogInActivity extends AppCompatActivity {
                             finish();
                         }
 
+                    }else{
+                        progressLogin.setVisibility(View.GONE);
+                        loginLayoutProcess.setVisibility(View.VISIBLE);
+                        showSnackBar("Account Not Found", "RETRY",CASE_ERROR);
                     }
                 }
                 catch (JSONException e) {

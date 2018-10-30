@@ -11,17 +11,13 @@ public interface Urls {
 
     String REGISTER_URL = HOST + "app/register";
     String FCM_UPDATE = HOST + "app/updateFCMToken";
-    String GET_STREAMS = HOST + "app/get_streams";
     String GET_NOTIFICATIONS = HOST + "app/get_news";
     String GET_EVENTS = HOST + "app/get_events";
-    String SUBSCRIBE_STREAM = HOST + "app/subscribe";
-    String UN_SUBSCRIBE_STREAM = HOST + "app/unsubscribe";
     String FEEDBACK = HOST + "app/feedback";
     String CREATE_TEAM = HOST + "app/create_team";
     String ADD_MEMBERS = HOST + "app/add_members";
     String GET_PAST_TEAMS = HOST + "app/get_my_teams";
     String LIST_ALL_TEAMS = HOST + "app/listAllTeams";
-    String LIST_ALL_STREAMS = HOST + "app/listAllStreams";
     String LOGIN_URL = HOST + "app/login";
     String EVENT_NOTIFICATION_URL = HOST + "app/createEvent";
     String NEWS_NOTIFICATION_URL = HOST + "app/createNews";
