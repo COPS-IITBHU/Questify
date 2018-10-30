@@ -25,8 +25,8 @@ android {
         applicationId "in.shriyansh.streamify"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 7
-        versionName "2.2"
+        versionCode 9
+        versionName "2.9"
     }
     buildTypes {
         debug {
